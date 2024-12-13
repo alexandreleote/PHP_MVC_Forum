@@ -17,13 +17,13 @@
                 <h3 class="message" style="color: red"><?= App\Session::getFlash("error") ?></h3>
                 <h3 class="message" style="color: green"><?= App\Session::getFlash("success") ?></h3>
                 <header>
-                    <nav>
+                    <nav class="navbar">
                         <div id="nav-left">
                             <a href="/">Accueil</a>
                             <?php
                             if(App\Session::isAdmin()){
                                 ?>
-                                <a href="index.php?ctrl=home&action=users">Voir la liste des gens</a>
+                                <a href="index.php?ctrl=home&action=users">Voir la liste des membres</a>
                             <?php } ?>
                         </div>
                         <div id="nav-right">
