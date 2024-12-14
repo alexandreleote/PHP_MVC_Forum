@@ -19,7 +19,7 @@
                 <header>
                     <nav class="navbar">
                         <div id="nav-left">
-                            <a href="/">Accueil</a>
+                            <a href="index.php">Accueil</a>
                             <?php
                             if(App\Session::isAdmin()){
                                 ?>
@@ -51,7 +51,7 @@
                     <?= $page ?>
                 </main>
             </div>
-            <footer>
+            <footer class="footer">
                 <p>&copy; <?= date_create("now")->format("Y") ?> - <a href="#">Règlement du forum</a> - <a href="#">Mentions légales</a></p>
             </footer>
         </div>
