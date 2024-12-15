@@ -88,6 +88,40 @@ final class Topic extends Entity{
         $this->creationDate = $creationDate;
         return $this;
     }
+    
+    /**
+     * Get the value of category
+     */ 
+    public function getCategory(){
+        return $this->category;
+    }
+
+    /**
+     * Set the value of category
+     *
+     * @return  self
+     */ 
+    public function setCategory($category){
+        $this->category = $category;
+        return $this;
+    }
+
+    /**
+     * Get the value of isLocked
+     */ 
+    public function getIsLocked(){
+        return $this->isLocked;
+    }
+
+    /**
+     * Set the value of isLocked
+     *
+     * @return  self
+     */ 
+    public function setIsLocked($isLocked){
+        $this->isLocked = $isLocked;
+        return $this;
+    }
 
 
     public function __toString(){

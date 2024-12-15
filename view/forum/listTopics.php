@@ -10,14 +10,14 @@
 </section>
 
 <article class="content-container">
-    <section class="topics-container topics-card">
+    <section class="contents-container contents-card">
         <header>
             <h3>Fil d'actualité</h3>
-            <button class="btn" id="btn-create-topic">Nouveau sujet</button>
+            <button class="btn" id="btn-create-content">Nouveau sujet</button>
         </header>
 
-        <div class="topics">
-            <ul class="topics-list">
+        <div class="contents">
+            <ul class="contents-list">
                 <?php
                 foreach($topics as $topic ){ ?>
                     <li>

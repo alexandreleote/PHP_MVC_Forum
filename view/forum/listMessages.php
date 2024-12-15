@@ -11,30 +11,24 @@
 </section>
 
 <article class="content-container">
-    <section class="topics-container topics-card">
+    <section class="contents-container contents-card">
         <header>
             <h3>Fil d'actualité</h3>
-            <button class="btn" id="btn-create-topic">Nouveau sujet</button>
+            <button class="btn" id="btn-create-content">Nouveau message</button>
         </header>
 
-        <div class="topics">
-            <ul class="topics-list">
-                <?php
-                foreach($topics as $topic ){ ?>
-                    <li>
-                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a> par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?>
-                    </li>
-                <?php } ?>
-            </ul>
+        <div class="contents">
+            <?php
+                foreach($posts as $post ){ ?>
+                    <p><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
+            <?php } ?>
+
         </div>
 
         <div class="form-container">
-            <form action="index.php?ctrl=forum&action=createTopic" method="post">
-                <input type="hidden" name="category_id" value="<?= $category->getId()?>">
-                <div class="form-header">
-                    <label for="title">Créer : </label>
-                    <input type="text" name="title" id="title" required placeholder="Titre du sujet">
-                </div>
+            <form action="index.php?ctrl=forum&action=createPost" method="post">
+                <input type="hidden" name="topic_id" value="<?= $topic->getId()?>">
+                <label for="content">Répondre : </label>
                 <div class="form-content">
                     <textarea name="content" id="content" cols="30" rows="10" placeholder="Contenu du sujet" required></textarea>
                     <input type="submit" value="Publier">
@@ -44,7 +38,7 @@
     </section>
 
     <aside class="aside-container members-card">
-        <h3>Les membres du mois</h3>
+        <h3>Dans la discussion</h3>
         <ul class="members-list">
             <li><a href="#" class="member-item">Nom du membre 1</a></li>
             <li><a href="#" class="member-item">Nom du membre 2</a></li>
@@ -52,7 +46,3 @@
         </ul>
     </aside>
 </article>
-<?php
-foreach($posts as $post ){ ?>
-    <p><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
-<?php }

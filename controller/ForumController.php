@@ -47,16 +47,19 @@ class ForumController extends AbstractController implements ControllerInterface{
     // Récupérer les messages d'une discussion
     public function discussionByTopic($id) {
 
+        $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
         $postManager = new PostManager();
         
         $topic = $topicManager->findOneById($id);
+        $category = $categoryManager->findOneById($id);
         $posts = $postManager->displayAllPostsByTopic($id);
 
         return [
             "view" => VIEW_DIR."forum/listMessages.php",
             "meta_description" => "Discussion : ".$topic,
             "data" => [
+                "category" => $category,
                 "topic" => $topic,
                 "posts" => $posts
             ]
@@ -111,6 +114,54 @@ class ForumController extends AbstractController implements ControllerInterface{
             "data" => [
                 "topics" => $topicManager->displayAllTopics()
             ]
+        ];
+    }
+
+
+    public function createPost() {
+        $topicManager = new TopicManager();
+        $postManager = new PostManager();
+        $categoryManager = new CategoryManager();
+        
+        if (isset($_POST["content"], $_POST["topic_id"])) {
+            $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $topic_id = filter_input(INPUT_POST, "topic_id", FILTER_SANITIZE_NUMBER_INT);
+    
+            // Utilisateur par défaut
+            $defaultUser = 1;
+    
+            if ($content && $topic_id) {
+                $postData = [
+                    "content" => $content,
+                    "user_id" => $defaultUser,  
+                    "topic_id" => $topic_id
+                ];
+    
+                $postManager->add($postData);
+    
+                // Récupérer le topic
+                $topic = $topicManager->findOneById($topic_id);
+                
+                // Récupérer la catégorie du topic
+                $category = $categoryManager->findOneById($topic->getCategory()->getId());
+    
+                return [
+                    "view" => VIEW_DIR."forum/listMessages.php",
+                    "meta_description" => "Discussion : ".$topic,
+                    "data" => [
+                        "category" => $category,
+                        "topic" => $topic, 
+                        "posts" => $postManager->displayAllPostsByTopic($topic_id)
+                    ]
+                ];
+            }
+        }
+    
+        // Gestion du cas où aucun post n'est créé
+        return [
+            "view" => VIEW_DIR."forum/listMessages.php",
+            "meta_description" => "Erreur de création de message",            
+            "data" => []
         ];
     }
 }

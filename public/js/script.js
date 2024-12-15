@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const btnCreateTopic = document.getElementById('btn-create-topic');
-    const formContainer = document.querySelector('.topics-container .form-container');
+    const btnCreateContent = document.getElementById('btn-create-content');
+    const formContainer = document.querySelector('.form-container');
 
-    if (btnCreateTopic && formContainer) {
-        btnCreateTopic.addEventListener('click', () => {
+    if (btnCreateContent && formContainer) {
+        btnCreateContent.addEventListener('click', () => {
             formContainer.classList.toggle('active');
             console.log('Button clicked, form container toggled');
         });
     } else {
         console.error('Button or form container not found');
+        console.log('btnCreateContent:', btnCreateContent);
+        console.log('formContainer:', formContainer);
     }
 });
