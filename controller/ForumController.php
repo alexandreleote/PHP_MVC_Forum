@@ -62,4 +62,55 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
+
+    public function createTopic() {
+
+        if (isset($_POST["title"], $_POST["content"], $_POST["category_id"])) {
+            $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $category_id = filter_input(INPUT_POST, "category_id", FILTER_SANITIZE_NUMBER_INT);
+
+            // Utilisateur par défaut
+            $defaultUser = 1;
+
+            if ($title && $content && $category_id) {
+
+                $topicData = [
+                    "title" => $title,
+                    "category_id" => $category_id,
+                    "user_id" => $defaultUser
+                ];
+
+                $postData = [
+                    "content" => $content,
+                    "user_id" => $defaultUser
+                ];
+
+                $topicManager = new TopicManager();
+                $postManager = new PostManager();
+
+                $topicId = $topicManager->add($topicData);
+
+                $postData["topic_id"] = $topicId;
+                $postManager->add($postData);
+
+                return [
+                    "view" => VIEW_DIR."forum/listMessages.php",
+                    "meta_description" => "Discussion : ".$title,
+                    "data" => [
+                        "topic" => $topicManager->findOneById($topicId), 
+                        "posts" => $postManager->displayAllPostsByTopic($topicId)
+                    ]
+                ];
+            }
+        }
+
+        return [
+            "view" => VIEW_DIR."forum/listsTopics.php",
+            "meta_description" => "Création d'un nouveau sujet",            
+            "data" => [
+                "topics" => $topicManager->displayAllTopics()
+            ]
+        ];
+    }
 }
