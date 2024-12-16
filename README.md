@@ -22,7 +22,7 @@ Pratiquer l'architecture MVC
 - Code commenté et indenté
 
 ## 🔧 Technologies utilisées
-Languages :
+Langages :
 - HTML5 (structure sémantique)
 - CSS3 (Flexbox/Grid, variables CSS)
 - JavaScript (ES6+, fetch API)
