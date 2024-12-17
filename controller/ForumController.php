@@ -97,14 +97,7 @@ class ForumController extends AbstractController implements ControllerInterface{
                 $postData["topic_id"] = $topicId;
                 $postManager->add($postData);
 
-                return [
-                    "view" => VIEW_DIR."forum/listMessages.php",
-                    "meta_description" => "Discussion : ".$title,
-                    "data" => [
-                        "topic" => $topicManager->findOneById($topicId), 
-                        "posts" => $postManager->displayAllPostsByTopic($topicId)
-                    ]
-                ];
+                $this->redirectTo("forum", "discussionByTopic", $topicId);
             }
         }
 
