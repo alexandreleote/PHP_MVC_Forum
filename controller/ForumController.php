@@ -74,51 +74,65 @@ class ForumController extends AbstractController implements ControllerInterface{
         }
     }
 
-    public function createTopic(int $id) {
-
-        if (isset($_POST["title"], $_POST["content"], $_POST["category_id"])) {
+    public function createTopic(int $category_id) {
+        $categoryManager = new CategoryManager();
+        $topicManager = new TopicManager();
+    
+        $category = $categoryManager->findOneById($category_id);
+        if(!$category) {
+            $this->redirectTo("home", "index");
+        }
+    
+        if (isset($_POST["title"], $_POST["content"])) {
             $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $category_id = filter_input(INPUT_POST, "category_id", FILTER_SANITIZE_NUMBER_INT);
-
+    
             $topicManager = new TopicManager();
             $postManager = new PostManager();
             
             // Auteur du topic
             $author = Session::getUser()->getId();
-
+    
             if ($title && $content && $category_id) {
-
+    
                 $topicData = [
                     "title" => $title,
                     "category_id" => $category_id,
                     "user_id" => $author
                 ];
-
+    
                 $topicId = $topicManager->add($topicData);
                 
                 $postData = [
                     "content" => $content,
                     "user_id" => $author,
-                    "topic id" => $topic_id
+                    "topic_id" => $topicId
                 ];
-
+    
                 $postManager->add($postData);
-
+    
                 $this->redirectTo("forum", "discussionByTopic", $topicId);
             }
         }
+    
+        // Gestion du cas où aucun topic n'est créé
+        return [
+            "view" => VIEW_DIR."forum/createTopic.php",
+            "meta_description" => "Créer un nouveau sujet",
+            "data" => [
+                "category" => $category
+            ]
+        ];
     }
 
 
-    public function createPost(int $id) {
+    public function createPost(int $topic_id) {
         $topicManager = new TopicManager();
         $postManager = new PostManager();
         $categoryManager = new CategoryManager();
         
-        if (isset($_POST["content"], $_POST["topic_id"])) {
+        if (isset($_POST["content"])) {
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $topic_id = filter_input(INPUT_POST, "topic_id", FILTER_SANITIZE_NUMBER_INT);
     
             // Auteur du message
             $author = Session::getUser()->getId();
@@ -158,24 +172,28 @@ class ForumController extends AbstractController implements ControllerInterface{
         ];
     }
 
-    // Suppression d'un message si on en est l'auteur
+    // Suppression d'un message si on en est l'auteur ou admin
     public function deletePost(int $id) {
-        $topicManager = new TopicManager();
         $postManager = new PostManager();
-        $categoryManager = new CategoryManager();
 
-        $user = Session::getUser()->getId();
-        $author = $postManager->getUser()->getId();
-
-        if($user === $author) {
-            $postData = [
-                "content" => $content,
-                "user_id" => $author,  
-                "topic_id" => $topic_id
-            ];
-            
-            $postManager->delete($postData);
+        if (!Session::getUser()) {
+            Session::addFlash('error', 'Vous devez être connecté pour supprimer un message');
+            return $this->redirectTo("forum", "listMessages");
         }
-    }
 
+        $postId = $postManager->findOneMessageById($id);
+        if (!$postId) {
+            Session::addFlash('error', 'Message non trouvé');
+            return $this->redirectTo("forum", "listMessages");
+        }
+
+        if ($postManager->deletePost($id, Session::getUser()->getId(), Session::isAdmin())) {
+            Session::addFlash('success', 'Message supprimé avec succès');
+        } else {
+            Session::addFlash('error', 'Vous n\'êtes pas autorisé à supprimer ce message');
+        }
+
+        return $this->redirectTo("forum", "discussionByTopic", $postId->getTopic()->getId());
+    }
 }
+   

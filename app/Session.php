@@ -45,9 +45,14 @@ class Session{
         return false;
     }
 
-    public static function isAuthor() {
-        if() {//Si l'utilisateur de la Session est celui qui a créé le post ou le topic 
-            return true;
+    public static function isAuthor($postAuthorId) {
+        // Vérifier qu'un utilisateur est connecté
+        $currentUser = self::getUser();
+        if (!$currentUser) {
+            return false;
+        }
+
+        // Comparer l'ID de l'utilisateur connecté avec l'ID de l'auteur du post
+        return $currentUser->getId() == $postAuthorId;
     }
-    return false;
 }

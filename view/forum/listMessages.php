@@ -21,15 +21,18 @@
             <?php
                 foreach($posts as $post ){ ?>
                     <p><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
-            <?php } ?>
-            <?php if(App\Session::isAuthor()) {?>
-                <button>Supprimer</button>
-            <?php } ?>
+            <?php 
+                // Vérifier si l'utilisateur peut supprimer le message
+                if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
+                    <form action="index.php?ctrl=forum&action=deletePost&id=<?= $post->getId() ?>" method="post">
+                        <button type="submit">Supprimer</button>
+                    </form>
+                <?php } 
+            } ?>
         </div>
 
         <div class="form-container">
-            <form action="index.php?ctrl=forum&action=createPost" method="post">
-                <input type="hidden" name="topic_id" value="<?= $topic->getId()?>">
+            <form action="index.php?ctrl=forum&action=createPost&id=<?= $topic->getId() ?>" method="post">
                 <label for="content">Répondre : </label>
                 <div class="form-content">
                     <textarea name="content" id="content" cols="30" rows="10" placeholder="Contenu du sujet" required></textarea>

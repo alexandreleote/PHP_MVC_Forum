@@ -28,17 +28,16 @@
         </div>
 
         <div class="form-container">
-            <form action="index.php?ctrl=forum&action=createTopic" method="post">
-                <input type="hidden" name="category_id" value="<?= $category->getId()?>">
-                <div class="form-header">
-                    <label for="title">Créer : </label>
-                    <input type="text" name="title" id="title" required placeholder="Titre du sujet">
-                </div>
-                <div class="form-content">
-                    <textarea name="content" id="content" cols="30" rows="10" placeholder="Contenu du sujet" required></textarea>
-                    <input type="submit" value="Publier">
-                </div>
-            </form>
+            <form action="index.php?ctrl=forum&action=createTopic&id=<?= $category->getId()?>" method="post">
+            <div class="form-header">
+                <label for="title">Créer : </label>
+                <input type="text" name="title" id="title" required placeholder="Titre du sujet">
+            </div>
+            <div class="form-content">
+                <textarea name="content" id="content" cols="30" rows="10" placeholder="Contenu du sujet" required></textarea>
+                <input type="submit" value="Publier">
+            </div>
+        </form>
         </div>
     </section>
 
