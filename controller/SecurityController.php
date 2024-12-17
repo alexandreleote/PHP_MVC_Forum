@@ -80,5 +80,28 @@ class SecurityController extends AbstractController{
         ];
     }
 
-    public function logout () {}
+    public function logout () {
+
+        $userManager = new UserManager();
+
+        unset($_SESSION["user"]);
+
+        $this->redirectTo("home", "index");
+    }
+
+    public function profile () {
+
+        $userManager = new UserManager();
+
+        $user = Session::getUser();
+
+        return [
+            "view" => VIEW_DIR."security/profile.php",
+            "meta_description" => "Profil personnel :".$user,
+            "data" => [
+                "user" => $user
+            ]
+        ];
+    }
+
 }

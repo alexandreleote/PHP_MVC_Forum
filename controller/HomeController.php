@@ -11,10 +11,17 @@ class HomeController extends AbstractController implements ControllerInterface {
 
     public function index(){
         
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
         $categories = $categoryManager->findAll(["id_category", ""]);
-        $topics = $topicManager->findTopicsByCategory($id);
+
+        if ($id !== null) {
+            $topics = $topicManager->findTopicsByCategory($id);
+        } else {
+            $topics = [];
+        }
 
         return [
             "view" => VIEW_DIR."home.php",

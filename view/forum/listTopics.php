@@ -5,14 +5,14 @@
 
 <section class="information-container">
     <div class="information">
-        <h2>Catégories / <?= $category ?></h2>
+        <h2><a href="index.php?ctrl=forum&action=listCategories">Catégories</a> / <?= $category ?></h2>
     </div>
 </section>
 
 <article class="content-container">
     <section class="contents-container contents-card">
         <header>
-            <h3>Fil d'actualité</h3>
+            <h3>Tous les sujets : <?= $category ?></h3>
             <button class="btn" id="btn-create-content">Nouveau sujet</button>
         </header>
 

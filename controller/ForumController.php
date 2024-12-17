@@ -34,18 +34,22 @@ class ForumController extends AbstractController implements ControllerInterface{
         $category = $categoryManager->findOneById($id);
         $topics = $topicManager->findTopicsByCategory($id);
 
-        return [
-            "view" => VIEW_DIR."forum/listTopics.php",
-            "meta_description" => "Liste des topics par catégorie : ".$category,
-            "data" => [
-                "category" => $category,
-                "topics" => $topics
-            ]
-        ];
+        if(!$category) {
+            $this->redirectTo("home", "index");
+        } else {
+            return [
+                "view" => VIEW_DIR."forum/listTopics.php",
+                "meta_description" => "Liste des topics par catégorie : ".$category,
+                "data" => [
+                    "category" => $category,
+                    "topics" => $topics
+                ]
+            ];
+        }
     }
 
     // Récupérer les messages d'une discussion
-    public function discussionByTopic($id) {
+    public function discussionByTopic(int $id) {
 
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
@@ -55,63 +59,59 @@ class ForumController extends AbstractController implements ControllerInterface{
         $category = $categoryManager->findOneById($id);
         $posts = $postManager->displayAllPostsByTopic($id);
 
-        return [
-            "view" => VIEW_DIR."forum/listMessages.php",
-            "meta_description" => "Discussion : ".$topic,
-            "data" => [
-                "category" => $category,
-                "topic" => $topic,
-                "posts" => $posts
-            ]
-        ];
+        if(!$topic) {
+            $this->redirectTo("home", "index");
+        } else {
+            return [
+                "view" => VIEW_DIR."forum/listMessages.php",
+                "meta_description" => "Discussion : ".$topic,
+                "data" => [
+                    "category" => $category,
+                    "topic" => $topic,
+                    "posts" => $posts
+                ]
+            ];
+        }
     }
 
-    public function createTopic() {
+    public function createTopic(int $id) {
 
         if (isset($_POST["title"], $_POST["content"], $_POST["category_id"])) {
             $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $category_id = filter_input(INPUT_POST, "category_id", FILTER_SANITIZE_NUMBER_INT);
 
-            // Utilisateur par défaut
-            $defaultUser = 1;
+            $topicManager = new TopicManager();
+            $postManager = new PostManager();
+            
+            // Auteur du topic
+            $author = Session::getUser()->getId();
 
             if ($title && $content && $category_id) {
 
                 $topicData = [
                     "title" => $title,
                     "category_id" => $category_id,
-                    "user_id" => $defaultUser
+                    "user_id" => $author
                 ];
-
-                $postData = [
-                    "content" => $content,
-                    "user_id" => $defaultUser
-                ];
-
-                $topicManager = new TopicManager();
-                $postManager = new PostManager();
 
                 $topicId = $topicManager->add($topicData);
+                
+                $postData = [
+                    "content" => $content,
+                    "user_id" => $author,
+                    "topic id" => $topic_id
+                ];
 
-                $postData["topic_id"] = $topicId;
                 $postManager->add($postData);
 
                 $this->redirectTo("forum", "discussionByTopic", $topicId);
             }
         }
-
-        return [
-            "view" => VIEW_DIR."forum/listsTopics.php",
-            "meta_description" => "Création d'un nouveau sujet",            
-            "data" => [
-                "topics" => $topicManager->displayAllTopics()
-            ]
-        ];
     }
 
 
-    public function createPost() {
+    public function createPost(int $id) {
         $topicManager = new TopicManager();
         $postManager = new PostManager();
         $categoryManager = new CategoryManager();
@@ -120,13 +120,13 @@ class ForumController extends AbstractController implements ControllerInterface{
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $topic_id = filter_input(INPUT_POST, "topic_id", FILTER_SANITIZE_NUMBER_INT);
     
-            // Utilisateur par défaut
-            $defaultUser = 1;
+            // Auteur du message
+            $author = Session::getUser()->getId();
     
             if ($content && $topic_id) {
                 $postData = [
                     "content" => $content,
-                    "user_id" => $defaultUser,  
+                    "user_id" => $author,  
                     "topic_id" => $topic_id
                 ];
     
@@ -157,4 +157,25 @@ class ForumController extends AbstractController implements ControllerInterface{
             "data" => []
         ];
     }
+
+    // Suppression d'un message si on en est l'auteur
+    public function deletePost(int $id) {
+        $topicManager = new TopicManager();
+        $postManager = new PostManager();
+        $categoryManager = new CategoryManager();
+
+        $user = Session::getUser()->getId();
+        $author = $postManager->getUser()->getId();
+
+        if($user === $author) {
+            $postData = [
+                "content" => $content,
+                "user_id" => $author,  
+                "topic_id" => $topic_id
+            ];
+            
+            $postManager->delete($postData);
+        }
+    }
+
 }

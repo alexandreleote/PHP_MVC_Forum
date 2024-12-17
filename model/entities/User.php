@@ -14,7 +14,7 @@ final class User extends Entity{
     private $email;
     private $password;
     private $subscriptionDate;
-    private $hasRole;
+    private $userRole;
 
     public function __construct($data){         
         $this->hydrate($data);        
@@ -95,7 +95,7 @@ final class User extends Entity{
      * Get the value of subscriptionDate
      */
     public function getSubscriptionDate () {
-        return $this->$subscriptionDate;
+        return $this->subscriptionDate;
     }
 
     /**
@@ -110,24 +110,27 @@ final class User extends Entity{
     }
 
     /**
-     * Get the value of hasRole
+     * Get the value of userRole
      */
-    public function gethasRole () {
-        return $this->hasRole;
+    public function getUserRole () {
+        return $this->userRole;
     }
 
     /**
-     * Set the value of hasRole
+     * Set the value of userRole
      *
      * @return  self
      */
-    public function setHasRole ($hasRole) {
-        $this->hasRole = $hasRole;
+    public function setUserRole ($userRole) {
+        $this->userRole = $userRole;
 
         return $this;
     }
 
-
+    public function hasRole($role) {
+        return $this->userRole === $role;
+    }
+    
     public function __toString() {
         return $this->nickName;
     }

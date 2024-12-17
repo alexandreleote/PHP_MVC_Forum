@@ -39,9 +39,15 @@ class Session{
 
     public static function isAdmin(){
         // attention de bien définir la méthode "hasRole" dans l'entité User en fonction de la façon dont sont gérés les rôles en base de données
-        if(self::getUser() && self::getUser()->hasRole("ROLE_ADMIN")){
+        if(self::getUser() && self::getUser()->hasRole("Admin")){
             return true;
         }
         return false;
     }
+
+    public static function isAuthor() {
+        if() {//Si l'utilisateur de la Session est celui qui a créé le post ou le topic 
+            return true;
+    }
+    return false;
 }

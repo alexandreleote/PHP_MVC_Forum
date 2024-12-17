@@ -6,14 +6,14 @@
 
 <section class="information-container">
     <div class="information">
-        <h2> <?= $category ?> / <?= $topic ?></h2>
+        <h2><a href="index.php?ctrl=forum&action=listCategories"><?= $category ?></a> / <?= $topic ?></h2>
     </div>
 </section>
 
 <article class="content-container">
     <section class="contents-container contents-card">
         <header>
-            <h3>Fil d'actualité</h3>
+            <h3><?= $topic ?></h3>
             <button class="btn" id="btn-create-content">Nouveau message</button>
         </header>
 
@@ -22,7 +22,9 @@
                 foreach($posts as $post ){ ?>
                     <p><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
             <?php } ?>
-
+            <?php if(App\Session::isAuthor()) {?>
+                <button>Supprimer</button>
+            <?php } ?>
         </div>
 
         <div class="form-container">
