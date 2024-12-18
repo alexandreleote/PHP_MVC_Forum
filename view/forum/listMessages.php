@@ -13,14 +13,28 @@
 <article class="content-container">
     <section class="contents-container contents-card">
         <header>
-            <h3><?= $topic ?></h3>
-            <button class="btn" id="btn-create-content">Nouveau message</button>
+            <div>
+                <h3><?= $topic ?></h3>
+                <?php if(App\Session::isAdmin()) {?>
+                    <form action="index.php?ctrl=forum&action=lockTopic&id=<?= $topic ?>" method="post">
+                        <button type="submit">Verrouiller</button>
+                    </form>
+                <?php } ?>
+            </div>
+                <?php 
+                    if(!$topic->getIsLocked()) { ?>
+                        <button class="btn" id="btn-create-content">Nouveau message</button>
+                    <?php } 
+                ?>
         </header>
 
         <div class="contents">
             <?php
-                foreach($posts as $post ){ ?>
-                    <p><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
+                foreach($posts as $post ){ 
+
+                    $class = App\Session::isAuthor($post->getUser()->getId()) ? "author" : "contributor";
+                    ?>
+                    <p class="post-content <?= $class ?> "><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
             <?php 
                 // Vérifier si l'utilisateur peut supprimer le message
                 if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
@@ -33,10 +47,15 @@
 
         <div class="form-container">
             <form action="index.php?ctrl=forum&action=createPost&id=<?= $topic->getId() ?>" method="post">
-                <label for="content">Répondre : </label>
+                <div class="form-label">
+                    <label for="content">Répondre</label>
+                </div>    
                 <div class="form-content">
-                    <textarea name="content" id="content" cols="30" rows="10" placeholder="Contenu du sujet" required></textarea>
-                    <input type="submit" value="Publier">
+                    <textarea name="content" id="content" cols="30" rows="10" placeholder="Votre message" required></textarea>
+                    <fieldset class="send-btn">
+                        <input type="submit" value="Publier" class="btn-publish-content">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </fieldset>
                 </div>
             </form>
         </div>

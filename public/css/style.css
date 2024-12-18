@@ -11,8 +11,11 @@
     --primary-white : #f9f9f9;
     --primary-purple : #4149D9;
     --primary-blue : #00BBFF;
+    --primary-dark-blue: #0000aa;
 
     --primary-grey : #9c9c9c;
+
+    --border-grey : #9c9c9c6b;
 
     --hover-light : #FFDAB9;
 
@@ -190,7 +193,8 @@ body {
     width: 765px;
     background: white;
     border-radius: 24px;
-    padding: 2rem;
+    padding: 2rem;/* 
+    border: 1px solid var(--border-grey); */
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     position: relative;
     overflow: hidden;
@@ -281,6 +285,12 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.contents {
+    & p {
+        margin: 25px;
+    }
+}
+
 /* Form */
 
 .form-container {
@@ -293,11 +303,21 @@ body {
     gap: 15px;
     background: white;
     border-radius: 24px;
-    padding: 2rem;
+    border: 1px solid var(--border-grey);
     position: relative;
-    
     flex-direction: column;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+    & .form-label {
+        border-bottom: 1px solid var(--border-grey);
+        height: 50px;
+
+        & label {
+            position: absolute;
+            top: 5px;
+            margin: 1rem;
+            font-weight: 700;
+        }
+    }
 
     & .form-header {
         font-size: 18px;
@@ -306,9 +326,9 @@ body {
             height: 25px;
             width: 345px;
             border-radius: 10px;
-            border: 0.4px solid var(--primary-grey);    
             padding: 10px;
             margin-right: 10px;
+            
         }
     }
 
@@ -318,8 +338,36 @@ body {
         & textarea {
             resize: none;
             border: none;
-            outline: none;
+            outline : none;
+            width: 100%;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 600;
         }   
+    }
+    
+    & .send-btn {
+        position: absolute;
+        bottom: 15px;
+        right: 35px;   
+    }
+    
+    & .btn-publish-content, .send-btn {
+        border: none;
+        cursor: pointer;
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--primary-purple);
+        background: none;
+
+        &:hover {
+            color: var(--primary-blue);
+        }
+
+        &:active {
+            color: var(--primary-dark-blue);
+        }
     }
 }
 

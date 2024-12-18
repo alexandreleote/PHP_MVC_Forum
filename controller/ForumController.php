@@ -27,6 +27,9 @@ class ForumController extends AbstractController implements ControllerInterface{
         ];
     }
 
+    /* Catégorie */
+
+    // Afficher les sujets par catégorie
     public function listTopicsByCategory($id) {
 
         $topicManager = new TopicManager();
@@ -47,6 +50,8 @@ class ForumController extends AbstractController implements ControllerInterface{
             ];
         }
     }
+
+    /* Sujets */
 
     // Récupérer les messages d'une discussion
     public function discussionByTopic(int $id) {
@@ -74,6 +79,7 @@ class ForumController extends AbstractController implements ControllerInterface{
         }
     }
 
+    // Créer un nouveau sujet
     public function createTopic(int $category_id) {
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
@@ -125,7 +131,29 @@ class ForumController extends AbstractController implements ControllerInterface{
         ];
     }
 
+    // Verrouillage du sujet
+    public function lockTopic() {
+        $topicManager = new TopicManager();
 
+        // Vérification si l'utilisateur est bien connecté
+        if (!Session::getUser()) {
+            Session::addFlash('error', 'Vous devez être connecté pour verrouiller un message');
+            return $this->redirectTo("forum", "listMessages");
+        }
+
+        // Si l'utilisateur est admin
+        if ($topicManager->lockTopic(Session::isAdmin())) {
+            Session::addFlash('success', 'Sujet verrouillé avec succès');
+        } else {
+            Session::addFlash('error', 'Vous n\'êtes pas autorisé à verrouiller ce message');
+        }
+
+        return $this->redirectTo("forum", "listMessages");
+    }
+
+    /* Messages */
+
+    // Créer un message
     public function createPost(int $topic_id) {
         $topicManager = new TopicManager();
         $postManager = new PostManager();
@@ -176,17 +204,20 @@ class ForumController extends AbstractController implements ControllerInterface{
     public function deletePost(int $id) {
         $postManager = new PostManager();
 
+        // Vérification si l'utilisateur est bien connecté
         if (!Session::getUser()) {
             Session::addFlash('error', 'Vous devez être connecté pour supprimer un message');
             return $this->redirectTo("forum", "listMessages");
         }
 
+        // On récupère l'id du message et si différent -> message erreur
         $postId = $postManager->findOneMessageById($id);
         if (!$postId) {
             Session::addFlash('error', 'Message non trouvé');
             return $this->redirectTo("forum", "listMessages");
         }
 
+        // Si l'utilisateur correspond à celui qui a créé le message OU si l'utilisateur est admin -> suppression
         if ($postManager->deletePost($id, Session::getUser()->getId(), Session::isAdmin())) {
             Session::addFlash('success', 'Message supprimé avec succès');
         } else {
@@ -195,5 +226,6 @@ class ForumController extends AbstractController implements ControllerInterface{
 
         return $this->redirectTo("forum", "discussionByTopic", $postId->getTopic()->getId());
     }
+    
 }
    

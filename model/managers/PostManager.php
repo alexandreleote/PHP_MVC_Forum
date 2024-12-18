@@ -16,7 +16,11 @@ class PostManager extends Manager{
 
     public function displayAllPostsByTopic($id){
 
-        $sql = "SELECT * 
+        $sql = "SELECT m.id_message,
+                       m.content,
+                       DATE_FORMAT(m.creationDate, '%d-%m-%Y à %H:%i') AS creationDate,
+                       m.user_id,
+                       m.topic_id
                 FROM ".$this->tableName." m 
                 WHERE m.topic_id = :id
                 ";
@@ -27,9 +31,13 @@ class PostManager extends Manager{
         );        
     }
 
+    // Suppression d'un message
     public function deletePost($postId, $userId, $isAdmin = false) {
         // D'abord, vérifier que le message existe et en obtenir l'auteur
-        $sql = "SELECT user_id FROM ".$this->tableName." WHERE id_message = :postId";
+        $sql = "SELECT user_id 
+                FROM ".$this->tableName." 
+                WHERE id_message = :postId";
+
         $result = DAO::select($sql, ['postId' => $postId], false);
         
         // Si le post n'existe pas, return false
@@ -39,7 +47,8 @@ class PostManager extends Manager{
         
         // Vérifier si l'utilisateur est l'auteur du post ou un administrateur
         if ($isAdmin || $result['user_id'] == $userId) {
-            $deleteSql = "DELETE FROM ".$this->tableName." WHERE id_message = :postId";
+            $deleteSql = "DELETE FROM ".$this->tableName." 
+                          WHERE id_message = :postId";
             return DAO::delete($deleteSql, ['postId' => $postId]);
         }
         
@@ -47,6 +56,7 @@ class PostManager extends Manager{
         return false;
     }
 
+    // Recherche d'un message par son ID
     public function findOneMessageById($id) {
         $sql = "SELECT * 
                 FROM ".$this->tableName." m 
