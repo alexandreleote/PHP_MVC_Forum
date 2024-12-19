@@ -11,18 +11,23 @@ use Model\Managers\PostManager;
 class ForumController extends AbstractController implements ControllerInterface{
 
     public function index() {
-        
         // créer une nouvelle instance de CategoryManager
         $categoryManager = new CategoryManager();
+        $topicManager = new TopicManager();
+    
         // récupérer la liste de toutes les catégories grâce à la méthode findAll de Manager.php (triés par nom)
         $categories = $categoryManager->findAll(["name", "DESC"]);
-
-        // le controller communique avec la vue "listCategories" (view) pour lui envoyer la liste des catégories (data)
+    
+        // Récupérer les topics pour la page d'accueil
+        $topics = $topicManager->findTopicsByCategory($categories[0]->getId());
+    
+        // le controller communique avec la vue "home" (view) pour lui envoyer la liste des catégories et des topics (data)
         return [
-            "view" => VIEW_DIR."forum/listCategories.php",
-            "meta_description" => "Liste des catégories du forum",
+            "view" => VIEW_DIR."home.php",
+            "meta_description" => "Page d'accueil du forum",
             "data" => [
-                "categories" => $categories
+                "categories" => $categories,
+                "topics" => $topics
             ]
         ];
     }
@@ -84,44 +89,55 @@ class ForumController extends AbstractController implements ControllerInterface{
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
     
+        // Validate category
         $category = $categoryManager->findOneById($category_id);
-        if(!$category) {
-            $this->redirectTo("home", "index");
+        
+        // Check if category is valid
+        if (!$category) {
+            // Log the error
+            error_log("Invalid category ID: " . $category_id);
+            
+            // Redirect or handle the error appropriately
+            $this->redirectTo("forum", "index");
+            return null;
         }
     
         if (isset($_POST["title"], $_POST["content"])) {
             $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
-            $topicManager = new TopicManager();
-            $postManager = new PostManager();
-            
-            // Auteur du topic
-            $author = Session::getUser()->getId();
+            // Ensure user is logged in
+            $author = Session::getUser();
+            if (!$author) {
+                // Redirect to login or show error
+                $this->redirectTo("security", "login");
+                return null;
+            }
     
             if ($title && $content && $category_id) {
-    
                 $topicData = [
                     "title" => $title,
                     "category_id" => $category_id,
-                    "user_id" => $author
+                    "user_id" => $author->getId()
                 ];
     
                 $topicId = $topicManager->add($topicData);
                 
                 $postData = [
                     "content" => $content,
-                    "user_id" => $author,
+                    "user_id" => $author->getId(),
                     "topic_id" => $topicId
                 ];
     
+                $postManager = new PostManager();
                 $postManager->add($postData);
     
                 $this->redirectTo("forum", "discussionByTopic", $topicId);
+                return null;
             }
         }
     
-        // Gestion du cas où aucun topic n'est créé
+        // If we reach here, show the create topic form
         return [
             "view" => VIEW_DIR."forum/createTopic.php",
             "meta_description" => "Créer un nouveau sujet",
@@ -131,24 +147,24 @@ class ForumController extends AbstractController implements ControllerInterface{
         ];
     }
 
-    // Verrouillage du sujet
-    public function lockTopic() {
+    // Verrouiler le sujet
+    
+    // Verrouiller le sujet
+    public function lockTopic(int $id) {
         $topicManager = new TopicManager();
-
-        // Vérification si l'utilisateur est bien connecté
-        if (!Session::getUser()) {
-            Session::addFlash('error', 'Vous devez être connecté pour verrouiller un message');
-            return $this->redirectTo("forum", "listMessages");
+        if (Session::isAdmin()) {
+            $topicManager->lock($id);
         }
+        $this->redirectTo("forum", "discussionByTopic", $id);
+    }
 
-        // Si l'utilisateur est admin
-        if ($topicManager->lockTopic(Session::isAdmin())) {
-            Session::addFlash('success', 'Sujet verrouillé avec succès');
-        } else {
-            Session::addFlash('error', 'Vous n\'êtes pas autorisé à verrouiller ce message');
+    // Déverrouiller le sujet
+    public function unlockTopic(int $id) {
+        $topicManager = new TopicManager();
+        if (Session::isAdmin()) {
+            $topicManager->unlock($id);
         }
-
-        return $this->redirectTo("forum", "listMessages");
+        $this->redirectTo("forum", "discussionByTopic", $id);
     }
 
     /* Messages */

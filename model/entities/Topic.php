@@ -123,6 +123,15 @@ final class Topic extends Entity{
         return $this;
     }
 
+    public function getLocked() {
+        return $this->isLocked;
+    }  
+
+    public function setLocked($locked) {
+        $this->isLocked = $locked;
+        return $this;
+    }
+
 
     public function __toString(){
         return $this->title;

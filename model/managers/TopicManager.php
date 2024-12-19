@@ -19,7 +19,7 @@ class TopicManager extends Manager{
 
         $sql = "SELECT t.id_topic,
                        t.title,
-                       DATE_FORMAT(t.creationDate, '%d-%m-%Y') AS creationDate,
+                       DATE_FORMAT(t.creationDate, '%d-%m-%Y à %H:%i') AS creationDate,
                        t.isLocked,
                        t.user_id,
                        t.category_id 
@@ -34,29 +34,19 @@ class TopicManager extends Manager{
         );
     }
 
-    // Verrouiller un sujet
-    public function lockTopic($isAdmin = false) {
-        // Vérifier si l'utilisateur est administrateur
-        if (!$isAdmin) {
-            return false;
-        }
+    // Verrouiller le sujet
+    public function lock($id) {
+        $sql = "UPDATE ".$this->tableName." 
+                SET isLocked = 1
+                WHERE id_topic = :id";
+        return DAO::update($sql, ['id' => $id]);
+    }
 
-        // Récupérer l'état actuel du verrouillage
-        $checkLockSql = "SELECT isLocked
-                        FROM ".$this->tableName;
-
-        $isLocked = DAO::select($checkLockSql, [], false);
-
-        // Inverser l'état du verrouillage (0 -> 1 ou 1 -> 0)
-        $newLockState = !$isLocked['isLocked'];
-
-        // Mettre à jour l'état de verrouillage
-        $lockSql = "UPDATE ".$this->tableName."
-                   SET isLocked = :newLockState";
-
-        return DAO::update($lockSql, [
-            'newLockState' => $newLockState ? 1 : 0
-        ]);
-        
+    // Déverrouiller le sujet
+    public function unlock($id) {    
+        $sql = "UPDATE ".$this->tableName." 
+                SET isLocked = 0
+                WHERE id_topic = :id";
+        return DAO::update($sql, ['id' => $id]);
     }
 }

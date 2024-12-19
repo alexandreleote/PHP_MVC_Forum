@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+/* document.addEventListener('DOMContentLoaded', () => {
     const btnCreateContent = document.getElementById('btn-create-content');
     const formContainer = document.querySelector('.form-container');
 
@@ -12,4 +12,4 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('btnCreateContent:', btnCreateContent);
         console.log('formContainer:', formContainer);
     }
-});
+}); */

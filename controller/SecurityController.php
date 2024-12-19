@@ -39,9 +39,10 @@ class SecurityController extends AbstractController{
 
                         $userManager->add($data);
 
-                        $this->redirectTo("home", "index");
+                        $this->redirectTo("security", "login");
                     } else {
                         // message indiquant que les mots de passe ne sont identiques OU que les règles de mot de passe fort ne sont pas respectés
+                        Session::addFlash("error", "Les mots de passe ne sont pas identiques ou ne respectent pas les exigences de securité.");
                     }
                 }
             }

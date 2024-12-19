@@ -55,4 +55,8 @@ class Session{
         // Comparer l'ID de l'utilisateur connecté avec l'ID de l'auteur du post
         return $currentUser->getId() == $postAuthorId;
     }
+
+    public static function isConnected() {
+        return isset($_SESSION['user']);
+    }
 }

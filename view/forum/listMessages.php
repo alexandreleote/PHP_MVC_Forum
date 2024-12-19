@@ -4,37 +4,41 @@
     $posts = $result["data"]['posts']; 
 ?>
 
-<section class="information-container">
-    <div class="information">
+<section class="">
+    <div class="">
         <h2><a href="index.php?ctrl=forum&action=listCategories"><?= $category ?></a> / <?= $topic ?></h2>
     </div>
 </section>
 
-<article class="content-container">
-    <section class="contents-container contents-card">
+<article class="main-container">
+    <section class="contents-container">
         <header>
             <div>
-                <h3><?= $topic ?></h3>
-                <?php if(App\Session::isAdmin()) {?>
-                    <form action="index.php?ctrl=forum&action=lockTopic&id=<?= $topic ?>" method="post">
-                        <button type="submit">Verrouiller</button>
-                    </form>
-                <?php } ?>
+                <h3><?= $topic ?></h3> 
+                    <?php if(App\Session::isAdmin()) { ?>
+                        <form action="index.php?ctrl=forum&action=<?= $topic->getLocked() ? 'unlockTopic' : 'lockTopic' ?>&id=<?= $topic->getId() ?>" method="post" class="">
+                            <button type="submit" class="">
+                                <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-lock-open"></i>' ?>
+                            </button>
+                        </form>
+                    <?php } else if (App\Session::isAdmin()){ ?>
+                        <?= $topic->getLocked() ? '<i class="fas fa-lock text-danger"></i>' : '<i class="fas fa-lock-open text-success"></i>' ?>
+                    <?php } ?>
             </div>
                 <?php 
-                    if(!$topic->getIsLocked()) { ?>
-                        <button class="btn" id="btn-create-content">Nouveau message</button>
+                    if(!$topic->getIsLocked() && App\Session::isConnected()) { ?>
+                        <button class="" id="">Nouveau message</button>
                     <?php } 
                 ?>
         </header>
 
-        <div class="contents">
+        <div class="">
             <?php
                 foreach($posts as $post ){ 
 
                     $class = App\Session::isAuthor($post->getUser()->getId()) ? "author" : "contributor";
                     ?>
-                    <p class="post-content <?= $class ?> "><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
+                    <p class=" <?= $class ?> "><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
             <?php 
                 // Vérifier si l'utilisateur peut supprimer le message
                 if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
@@ -45,15 +49,17 @@
             } ?>
         </div>
 
-        <div class="form-container">
+        <div class="">
             <form action="index.php?ctrl=forum&action=createPost&id=<?= $topic->getId() ?>" method="post">
-                <div class="form-label">
-                    <label for="content">Répondre</label>
+                <div class="">
+                    <fieldset class="">
+                        <label for="content">Répondre</label>
+                    </fieldset>
                 </div>    
-                <div class="form-content">
+                <div class="">
                     <textarea name="content" id="content" cols="30" rows="10" placeholder="Votre message" required></textarea>
-                    <fieldset class="send-btn">
-                        <input type="submit" value="Publier" class="btn-publish-content">
+                    <fieldset class="">
+                        <input type="submit" value="Publier" class="">
                         <i class="fa-solid fa-paper-plane"></i>
                     </fieldset>
                 </div>
@@ -61,9 +67,9 @@
         </div>
     </section>
 
-    <aside class="aside-container members-card">
+    <aside class="aside-container">
         <h3>Dans la discussion</h3>
-        <ul class="members-list">
+        <ul class="">
             <li><a href="#" class="member-item">Nom du membre 1</a></li>
             <li><a href="#" class="member-item">Nom du membre 2</a></li>
             <li><a href="#" class="member-item">Nom du membre 3</a></li>
