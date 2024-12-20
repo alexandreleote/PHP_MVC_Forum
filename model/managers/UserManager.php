@@ -49,4 +49,34 @@ class UserManager extends Manager{
             $this->className
         );
     }
+
+    public function deleteProfile($id) {
+        // Créer l'utilisateur anonyme s'il n'existe pas
+        if (empty($this->findOneById(1))) {
+            $data = [
+                'id_user' => 1,
+                'nickName' => 'anonyme',
+                'password' => '',
+                'email' => ''
+            ];
+            $this->add($data);
+        }
+
+        // Mettre à jour les posts de l'utilisateur
+        $sqlPosts = "UPDATE message 
+                     SET user_id = 1 
+                     WHERE user_id = :id";
+        DAO::update($sqlPosts, ['id' => $id]);
+
+        // Mettre à jour les topics de l'utilisateur
+        $sqlTopics = "UPDATE topic 
+                      SET user_id = 1 
+                      WHERE user_id = :id";
+        DAO::update($sqlTopics, ['id' => $id]);
+
+        // Supprimer l'utilisateur
+        $sqlDelete = "DELETE FROM user 
+                      WHERE id_user = :id";
+        return DAO::delete($sqlDelete, ['id' => $id]);
+    }
 }

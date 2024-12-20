@@ -18,9 +18,6 @@ class ForumController extends AbstractController implements ControllerInterface{
         // récupérer la liste de toutes les catégories grâce à la méthode findAll de Manager.php (triés par nom)
         $categories = $categoryManager->findAll(["name", "DESC"]);
     
-        // Récupérer les topics pour la page d'accueil
-        $topics = $topicManager->findTopicsByCategory($categories[0]->getId());
-    
         // le controller communique avec la vue "home" (view) pour lui envoyer la liste des catégories et des topics (data)
         return [
             "view" => VIEW_DIR."home.php",

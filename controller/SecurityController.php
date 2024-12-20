@@ -105,4 +105,25 @@ class SecurityController extends AbstractController{
         ];
     }
 
+    public function modify () {
+
+        $userManager = new UserManager();
+
+        $user = Session::getUser();
+
+        $this->redirectTo("security", "profile");
+    }
+
+    public function deleteUserProfile ($id) {
+        $userManager = new UserManager();
+
+        $user = Session::getUser();
+
+        $userManager->deleteProfile($user->getId());
+
+        Session::removeUser('user');
+
+        $this->redirectTo("security", "login");
+    }
+
 }

@@ -37,6 +37,10 @@ class Session{
         return (isset($_SESSION['user'])) ? $_SESSION['user'] : false;
     }
 
+    public static function removeUser(){
+        unset($_SESSION['user']);
+    }
+    
     public static function isAdmin(){
         // attention de bien définir la méthode "hasRole" dans l'entité User en fonction de la façon dont sont gérés les rôles en base de données
         if(self::getUser() && self::getUser()->hasRole("Admin")){
