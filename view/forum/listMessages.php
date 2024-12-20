@@ -4,15 +4,15 @@
     $posts = $result["data"]['posts']; 
 ?>
 
-<section class="">
-    <div class="">
+<section class="information-container">
+    <div class="information">
         <h2><a href="index.php?ctrl=forum&action=listCategories"><?= $category ?></a> / <?= $topic ?></h2>
     </div>
 </section>
 
 <article class="main-container">
     <section class="contents-container">
-        <header>
+        <header class="contents-header">
             <div>
                 <h3><?= $topic ?></h3> 
                     <?php if(App\Session::isAdmin()) { ?>
@@ -27,12 +27,12 @@
             </div>
                 <?php 
                     if(!$topic->getIsLocked() && App\Session::isConnected()) { ?>
-                        <button class="" id="">Nouveau message</button>
+                        <button class="btn" id="btn-new-content">Commenter</button>
                     <?php } 
                 ?>
         </header>
 
-        <div class="">
+        <div class="contents-main">
             <?php
                 foreach($posts as $post ){ 
 
@@ -49,18 +49,17 @@
             } ?>
         </div>
 
-        <div class="">
+        <div class="contents-form">
             <form action="index.php?ctrl=forum&action=createPost&id=<?= $topic->getId() ?>" method="post">
-                <div class="">
-                    <fieldset class="">
+                <div class="contents-form-header">
+                    <fieldset class="form-title">
                         <label for="content">Répondre</label>
                     </fieldset>
                 </div>    
-                <div class="">
+                <div class="contents-form-main">
                     <textarea name="content" id="content" cols="30" rows="10" placeholder="Votre message" required></textarea>
-                    <fieldset class="">
-                        <input type="submit" value="Publier" class="">
-                        <i class="fa-solid fa-paper-plane"></i>
+                    <fieldset class="contents-form-footer">
+                        <button type="submit" class="btn btn-publish-content" >Publier <i class="fa-solid fa-paper-plane"></i></button>
                     </fieldset>
                 </div>
             </form>

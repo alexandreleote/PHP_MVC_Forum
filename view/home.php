@@ -18,21 +18,9 @@
         <h2>Les sujets actifs</h2>
         <?php foreach ($categories as $category) { ?>
             <div class="category-container">
-                <p><a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId()?>"><?= $category->getName() ?></a></p>
-                <?php 
-                if (!empty($topics)) {
-                    foreach ($topics as $topic) { ?>
-                        <p>
-                            <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>">
-                                <?= $topic->getTitle() ?>
-                            </a> 
-                            par <?= $topic->getUser() ?> 
-                            le <?= $topic->getCreationDate() ?>
-                        </p>
-                    <?php } 
-                } else { ?>
-                    <p>Aucun sujet récent</p>
-                <?php } ?>
+                <p><a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>">
+                    <?= $category->getName() ?>
+                </a></p>
             </div>
         <?php } ?>
     </section>

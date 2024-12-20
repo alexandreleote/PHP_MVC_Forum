@@ -13,11 +13,11 @@
     <section class="contents-container">
         <header class="contents-header">
             <h3>Tous les sujets : <?= $category ?></h3>
-            <button class="btn" id="btn-new-topic">Nouveau sujet</button>
+            <button class="btn" id="btn-new-content">Nouveau sujet</button>
         </header>
 
-        <div class="">
-            <ul class="">
+        <div class="contents-main">
+            <ul class="contents-discussion">
                 <?php
                 if(empty($topics)) { ?>
                     <p>Soyez le premier à écrire dans cette catégorie</p>
@@ -32,20 +32,19 @@
             </ul>
         </div>
 
-        <div class="">
+        <div class="contents-form">
             <form action="index.php?ctrl=forum&action=createTopic&id=<?= $category->getId()?>" method="post">
-            <div class="">
-                <fieldset class="">
+            <div class="contents-form-header">
+                <fieldset class="form-title">
                     <label for="title">Créer : </label>
-                    <input type="text" name="title" id="title" required placeholder="Titre du sujet">
+                    <input type="text" name="title" id="title" required placeholder="Titre du sujet" maxlength="255">
                     <button class="close-btn"><i class="fa-solid fa-close"></i></button>
                 </fieldset>
             </div>
-            <div class="">
+            <div class="contents-form-main">
                 <textarea name="content" id="content" cols="30" rows="10" placeholder="Contenu du sujet" required></textarea>
-                <fieldset class="">
-                        <input type="submit" value="Publier" class="">
-                        <i class="fa-solid fa-paper-plane"></i>
+                <fieldset class="contents-form-footer">
+                    <button type="submit" class="btn btn-publish-content" >Publier <i class="fa-solid fa-paper-plane"></i></button>
                 </fieldset>
             </div>
         </form>
