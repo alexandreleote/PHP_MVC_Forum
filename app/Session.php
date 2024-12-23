@@ -49,6 +49,13 @@ class Session{
         return false;
     }
 
+    public static function isModerator(){
+        if(self::getUser() && self::getUser()->hasRole("Moderator")){
+            return true;
+        }
+        return false;
+    }
+
     public static function isAuthor($postAuthorId) {
         // Vérifier qu'un utilisateur est connecté
         $currentUser = self::getUser();

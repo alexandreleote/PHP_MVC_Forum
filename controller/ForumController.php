@@ -11,20 +11,25 @@ use Model\Managers\PostManager;
 class ForumController extends AbstractController implements ControllerInterface{
 
     public function index() {
-        // créer une nouvelle instance de CategoryManager
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
+        $postManager = new PostManager();
     
-        // récupérer la liste de toutes les catégories grâce à la méthode findAll de Manager.php (triés par nom)
         $categories = $categoryManager->findAll(["name", "DESC"]);
+        
+        // Récupérer les derniers sujets tous confondus
+        $latestTopics = $topicManager->getLatestTopics(5) ?: [];
+        
+        // Récupérer les derniers messages
+        $latestPosts = $postManager->getLatestPosts(5) ?: [];
     
-        // le controller communique avec la vue "home" (view) pour lui envoyer la liste des catégories et des topics (data)
         return [
             "view" => VIEW_DIR."home.php",
             "meta_description" => "Page d'accueil du forum",
             "data" => [
-                "categories" => $categories,
-                "topics" => $topics
+                "categories" => $categories ?: [],
+                "latestTopics" => $latestTopics,
+                "latestPosts" => $latestPosts
             ]
         ];
     }
@@ -34,10 +39,11 @@ class ForumController extends AbstractController implements ControllerInterface{
     // Afficher les sujets par catégorie
     public function listTopicsByCategory($id) {
 
-        $topicManager = new TopicManager();
         $categoryManager = new CategoryManager();
+        $topicManager = new TopicManager();
+        
         $category = $categoryManager->findOneById($id);
-        $topics = $topicManager->findTopicsByCategory($id);
+        $topics = $topicManager->displayAllTopicsByCategory($id);
 
         if(!$category) {
             $this->redirectTo("home", "index");

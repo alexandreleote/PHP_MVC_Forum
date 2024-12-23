@@ -43,7 +43,7 @@
                 // Vérifier si l'utilisateur peut supprimer le message
                 if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
                     <form action="index.php?ctrl=forum&action=deletePost&id=<?= $post->getId() ?>" method="post">
-                        <button type="submit">Supprimer</button>
+                        <button type="submit" class="btn delete-btn">Supprimer <i class="fa-solid fa-trash"></i></button>
                     </form>
                 <?php } 
             } ?>
@@ -54,6 +54,7 @@
                 <div class="contents-form-header">
                     <fieldset class="form-title">
                         <label for="content">Répondre</label>
+                        <button class="close-btn"><i class="fa-solid fa-close"></i></button>
                     </fieldset>
                 </div>    
                 <div class="contents-form-main">

@@ -132,6 +132,9 @@ final class Topic extends Entity{
         return $this;
     }
 
+    public function getPosts() {
+        return \Model\Managers\PostManager::getPostsByTopic($this->id);
+    }
 
     public function __toString(){
         return $this->title;

@@ -1,6 +1,5 @@
 <?php
-    $categories = $result["data"]['categories']; 
-    $topics = $result["data"]['topics'] ?? []; 
+    $categories = $result["data"]['categories'] ?? [];
 ?>
 
 <section>
@@ -14,24 +13,43 @@
 </section>
 
 <section class="main-container">
-    <section class="contents-container active-categories-container">
+    <section class="contents-container">
         <h2>Les sujets actifs</h2>
-        <?php foreach ($categories as $category) { ?>
-            <div class="category-container">
-                <p><a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>">
-                    <?= $category->getName() ?>
-                </a></p>
-            </div>
-        <?php } ?>
+        <div class="contents-list">
+            <?php 
+            $activeCategoriesFound = false;
+            if(!empty($categories)) { 
+                foreach ($categories as $category) { 
+                    $topics = $category->getTopics();
+                    $topicCount = count($topics);
+                    
+                    // N'afficher que les catégories avec des sujets
+                    if ($topicCount > 0) {
+                        $activeCategoriesFound = true;
+                        ?>
+                        <article class="content-item">
+                            <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a>
+                            <p>(<?= $topicCount ?>)</p>
+                        </article>
+                    <?php } 
+                } 
+                
+                // Si aucune catégorie active n'a été trouvée
+                if (!$activeCategoriesFound) { ?>
+                    <p>Aucune catégorie avec des sujets n'est disponible</p>
+                <?php }
+            } else { ?>
+                <p>Aucune catégorie disponible</p>
+            <?php } ?>
+        </div>
     </section>
 
-
     <aside class="aside-container">
-            <h3>Dans la discussion</h3>
-            <ul class="members-list">
-                <li><a href="#" class="member-item">Nom du membre 1</a></li>
-                <li><a href="#" class="member-item">Nom du membre 2</a></li>
-                <li><a href="#" class="member-item">Nom du membre 3</a></li>
-            </ul>
+        <h3>Dans la discussion</h3>
+        <ul class="members-list">
+            <li><a href="#" class="member-item">Nom du membre 1</a></li>
+            <li><a href="#" class="member-item">Nom du membre 2</a></li>
+            <li><a href="#" class="member-item">Nom du membre 3</a></li>
+        </ul>
     </aside>
 </section>

@@ -16,8 +16,13 @@ class UserManager extends Manager{
 
     // Rechercher un utilisateur inscrit en BDD
     public function findUserByEmail($email) {
-        $sql = "SELECT *
-                FROM user
+        $sql = "SELECT id_user, 
+                       nickName, 
+                       email,
+                       password,
+                       DATE_FORMAT(subscriptionDate, '%d-%m-%Y') AS subscriptionDate,
+                       userRole
+                FROM ".$this->tableName." 
                 WHERE email = :email";
 
         return $this->getOneOrNullResult(
@@ -28,8 +33,13 @@ class UserManager extends Manager{
 
     // Vérifier si email déjà utilisé
     public function isEmailUsed($email) {
-        $sql = "SELECT *
-                FROM user
+        $sql = "SELECT id_user, 
+                       nickName, 
+                       email,
+                       password,
+                       DATE_FORMAT(subscriptionDate, '%d-%m-%Y') AS subscriptionDate,
+                       userRole
+                FROM ".$this->tableName." 
                 WHERE email = :email";
 
         return $this->getMultipleResults(
@@ -40,8 +50,13 @@ class UserManager extends Manager{
 
     // Vérifier si pseudonyme déjà utilisé
     public function isNickNameUsed($nickName) {
-        $sql = "SELECT *
-                FROM user
+        $sql = "SELECT id_user, 
+                       nickName, 
+                       email,
+                       password,
+                       DATE_FORMAT(subscriptionDate, '%d-%m-%Y') AS subscriptionDate,
+                       userRole
+                FROM ".$this->tableName." 
                 WHERE nickName = :nickName";
         
         return $this->getMultipleResults(
@@ -78,5 +93,19 @@ class UserManager extends Manager{
         $sqlDelete = "DELETE FROM user 
                       WHERE id_user = :id";
         return DAO::delete($sqlDelete, ['id' => $id]);
+    }
+
+    public static function getUserById($userId) {
+        $sql = "SELECT id_user, 
+                        nickName, 
+                        email,
+                        DATE_FORMAT(subscriptionDate, '%d-%m-%Y') AS subscriptionDate,
+                        userRole
+                FROM user 
+                WHERE id_user = :userId";
+
+        $result = DAO::select($sql, ['userId' => $userId], false);
+        
+        return $result ? new \Model\Entities\User($result) : null;
     }
 }

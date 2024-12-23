@@ -10,6 +10,7 @@ final class Post extends Entity{
     private $creationDate;
     private $user;
     private $topic;
+    private $category;
 
     public function __construct($data){         
         $this->hydrate($data);        
@@ -67,6 +68,19 @@ final class Post extends Entity{
         return $this;
     }
 
+    // Get the value of category
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    // Set the value of category
+    public function setCategory($category)
+    {
+        $this->category = $category;
+        return $this;
+    }
+
     // Get the value of topic
     public function getTopic()
     {
@@ -78,6 +92,10 @@ final class Post extends Entity{
     {
         $this->topic = $topic;
         return $this;
+    }
+
+    public function getUsers() {
+        return [\Model\Managers\UserManager::getUserById($this->user)];
     }
 
     // Affiche le contenu avec des balises <p> pour faciliter la lecture

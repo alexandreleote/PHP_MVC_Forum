@@ -3,6 +3,7 @@ namespace Model\Managers;
 
 use App\Manager;    
 use App\DAO;
+use Model\Entities\Post;
 
 class PostManager extends Manager{
 
@@ -22,8 +23,7 @@ class PostManager extends Manager{
                        m.user_id,
                        m.topic_id
                 FROM ".$this->tableName." m 
-                WHERE m.topic_id = :id
-                ";
+                WHERE m.topic_id = :id";
 
         return  $this->getMultipleResults(
             DAO::select($sql, ['id' => $id]), 
@@ -70,5 +70,61 @@ class PostManager extends Manager{
         );
     }
 
+    public static function getPostsByUser($userId) {
+        $sql = "SELECT m.id_message,
+                       m.content,
+                       DATE_FORMAT(m.creationDate, '%d-%m-%Y') AS creationDate,
+                       m.user_id,
+                       m.topic_id,
+                       t.category_id
+                FROM message m 
+                LEFT JOIN topic t ON m.topic_id = t.id_topic
+                LEFT JOIN category c ON t.category_id = c.id_category
+                WHERE m.user_id = :userId 
+                ORDER BY m.creationDate 
+                DESC LIMIT 3";
+        $results = DAO::select($sql, ['userId' => $userId]);
+        
+        $posts = [];
+        if ($results) {
+            foreach ($results as $result) {
+                $posts[] = new Post($result);
+            }
+        }
+        
+        return $posts;
+    }
 
+    public static function countPostsByUser($userId) {
+        $sql = "SELECT COUNT(*) as post_count 
+                FROM message 
+                WHERE user_id = :userId";
+        $result = DAO::select($sql, ['userId' => $userId], false);
+        return $result['post_count'];
+    }
+
+    public function getLatestPosts($limit = 5) {
+        $sql = "SELECT m.id_message, 
+                        m.content, 
+                        m.creationDate, 
+                        m.topic_id,
+                        t.title as topicTitle,
+                        c.name as categoryName,
+                        u.nickName as authorName
+                FROM message m
+                LEFT JOIN topic t ON m.topic_id = t.id_topic
+                LEFT JOIN category c ON t.category_id = c.id_category
+                LEFT JOIN user u ON m.user_id = u.id_user
+                ORDER BY m.creationDate DESC
+                LIMIT :limit";
+        
+        $results = DAO::select($sql, ['limit' => $limit]);
+        
+        $posts = [];
+        foreach($results as $result) {
+            $posts[] = new Post($result);
+        }
+    
+        return $posts;
+    }
 }

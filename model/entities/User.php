@@ -2,6 +2,8 @@
 namespace Model\Entities;
 
 use App\Entity;
+use Model\Managers\TopicManager;
+use Model\Managers\PostManager;
 
 /*
     En programmation orientée objet, une classe finale (final class) est une classe que vous ne pouvez pas étendre, c'est-à-dire qu'aucune autre classe ne peut hériter de cette classe. En d'autres termes, une classe finale ne peut pas être utilisée comme classe parente.
@@ -95,7 +97,16 @@ final class User extends Entity{
      * Get the value of subscriptionDate
      */
     public function getSubscriptionDate () {
-        return $this->subscriptionDate;
+
+        $date = new \DateTime($this->subscriptionDate);
+        $formatter = new \IntlDateFormatter(
+            'fr_FR', 
+            \IntlDateFormatter::FULL, 
+            \IntlDateFormatter::NONE
+        );
+        $formatter->setPattern('d/M/Y');
+        return $formatter->format($date);
+        
     }
 
     /**
@@ -129,6 +140,26 @@ final class User extends Entity{
 
     public function hasRole($role) {
         return $this->userRole === $role;
+    }
+
+    public function getCategories() {
+        return CategoryManager::getCategoriesByUser($this->id);
+    }
+
+    public function getCreatedTopics() {
+        return TopicManager::getTopicsByUser($this->id);
+    }
+
+    public function countCreatedTopics() {
+        return TopicManager::countTopicsByUser($this->id);
+    }
+
+    public function getCreatedPosts() {
+        return PostManager::getPostsByUser($this->id);
+    }
+
+    public function countCreatedPosts() {
+        return PostManager::countPostsByUser($this->id);
     }
     
     public function __toString() {

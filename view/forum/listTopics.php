@@ -17,19 +17,19 @@
         </header>
 
         <div class="contents-main">
-            <ul class="contents-discussion">
+            <div class="contents-discussion">
                 <?php
                 if(empty($topics)) { ?>
                     <p>Soyez le premier à écrire dans cette catégorie</p>
                 <?php } else {
                     foreach($topics as $topic ){ ?>
-                        <li>
+                        <div class="discussion-item">
                             <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
                             <span>par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?></span>
-                        </li>
+                        </div>
                     <?php } ?>
                 <?php } ?>
-            </ul>
+            </div>
         </div>
 
         <div class="contents-form">
