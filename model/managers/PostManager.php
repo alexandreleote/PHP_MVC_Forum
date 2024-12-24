@@ -103,6 +103,18 @@ class PostManager extends Manager{
         return $result['post_count'];
     }
 
+    public static function countPosts($topicId) {
+        $sql = "SELECT COUNT(*) AS post_count
+                FROM message 
+                WHERE topic_id = :topicId";
+        
+        // Make sure the variable name matches
+        $result = DAO::select($sql, ['topicId' => $topicId], false);
+    
+        // Check if the result is valid and return the count
+        return $result['post_count'] ?? 0;  // Return 0 if no result is found
+    }
+    
     public function getLatestPosts($limit = 5) {
         $sql = "SELECT m.id_message, 
                         m.content, 

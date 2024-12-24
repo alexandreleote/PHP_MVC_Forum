@@ -21,9 +21,9 @@
             <div class="profile-main-info">
                 <div class="user-role">
                     <i class="fa-solid fa-chevron-right"></i>
-                    <?php if($user->getUserRole() === "Admin") { ?>
+                    <?php if($user->isAdmin()) { ?>
                         <span>Membre / Admin</span>
-                    <?php } else if ($user->getUserRole() === "Mod") { ?>
+                    <?php } else if ($user->isMod()) { ?>
                         <span>Membre / Modérateur</span>
                     <?php } else { ?>
                         <span>Membre</span>
@@ -47,16 +47,18 @@
                     <ul>
                         <?php foreach ($createdTopics as $createdTopic) { ?>
                             <li class="post-topic-item">
-                                <div class="post-topic-category">
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                    <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdTopic->getCategory()->getId() ?>">
-                                        <?= $createdTopic->getCategory() ?>
-                                    </a>
-                                </div>
-                                <div class="post-topic-title">
-                                    <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdTopic->getId() ?>">
-                                        <?= strlen($createdTopic->getTitle()) > 20 ? substr($createdTopic->getTitle(), 0, 50).'...' : $createdTopic->getTitle() ?>
-                                    </a>
+                                <div class="post-topic-wrapper">
+                                    <div class="post-topic-category">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdTopic->getCategory()->getId() ?>">
+                                            <?= $createdTopic->getCategory() ?>
+                                        </a>
+                                    </div>
+                                    <div class="post-topic-title">
+                                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdTopic->getId() ?>">
+                                            <?= strlen($createdTopic->getTitle()) > 20 ? substr($createdTopic->getTitle(), 0, 50).'...' : $createdTopic->getTitle() ?>
+                                        </a>
+                                    </div>
                                 </div>
                                 <div class="post-topic-date">
                                     <p>le</p><span><?= $createdTopic->getCreationDate() ?></span>
@@ -79,16 +81,18 @@
                     <ul>
                         <?php foreach ($createdPosts as $createdPost) { ?>
                             <li class="post-post-item">
-                                <div class="post-post-category">
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                    <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdPost->getCategory()->getId() ?>">
-                                        <?= $createdPost->getCategory() ?>
-                                    </a>
-                                </div>    
-                                <div class="post-post-title">
-                                    <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdPost->getTopic()->getId() ?>">
-                                        <?= strlen($createdPost->getTopic()->getTitle()) > 20 ? substr($createdPost->getTopic()->getTitle(), 0, 50).'...' : $createdPost->getTopic()->getTitle() ?>
-                                    </a>
+                                <div class="post-post-wrapper">
+                                    <div class="post-post-category">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdPost->getCategory()->getId() ?>">
+                                            <?= $createdPost->getCategory() ?>
+                                        </a>
+                                    </div>    
+                                    <div class="post-post-title">
+                                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdPost->getTopic()->getId() ?>">
+                                            <?= strlen($createdPost->getTopic()->getTitle()) > 20 ? substr($createdPost->getTopic()->getTitle(), 0, 50).'...' : $createdPost->getTopic()->getTitle() ?>
+                                        </a>
+                                    </div>
                                 </div>
                                 <div class="post-post-date">
                                     <p>le</p><span><?= $createdPost->getCreationDate() ?></span>

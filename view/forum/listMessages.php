@@ -6,7 +6,7 @@
 
 <section class="information-container">
     <div class="information">
-        <h2><a href="index.php?ctrl=forum&action=listCategories"><?= $category ?></a> / <?= $topic ?></h2>
+        <h2><a href="index.php?ctrl=forum&action=index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $topic->getCategory()->getId() ?>"><?= $topic->getCategory() ?></a> / <?= $topic ?></h2>
     </div>
 </section>
 

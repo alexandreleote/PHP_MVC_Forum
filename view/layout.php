@@ -20,10 +20,12 @@
                     <nav class="navbar">
                         <div id="nav-left">
                             <a href="index.php">Accueil</a>
+                            <a href="">Catégories</a>
+                            <a href="">Besoin d'aide ?</a>
                             <?php
                             if(App\Session::isAdmin()){
                                 ?>
-                                <a href="index.php?ctrl=home&action=users">Voir la liste des membres</a>
+                                <a href="index.php?ctrl=home&action=users">Communauté</a>
                             <?php } ?>
                         </div>
                         <div id="nav-right">

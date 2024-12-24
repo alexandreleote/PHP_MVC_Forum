@@ -18,7 +18,16 @@ class TopicManager extends Manager{
     }
 
     public function displayAllTopicsByCategory($id) {
-        $sql = "SELECT * FROM topic WHERE category_id = :id ORDER BY creationDate DESC";
+        $sql = "SELECT t.id_topic,
+                       t.title,
+                       DATE_FORMAT(t.creationDate, '%d-%m-%Y') AS creationDate,
+                       t.creationDate AS sortTopic,
+                       t.isLocked,
+                       t.user_id,
+                       t.category_id 
+                FROM ".$this->tableName." t 
+                WHERE category_id = :id 
+                ORDER BY sortTopic DESC";
         
         $results = DAO::select($sql, ['id' => $id]);
         

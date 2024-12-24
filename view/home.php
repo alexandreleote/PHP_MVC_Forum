@@ -28,11 +28,37 @@
                         $activeCategoriesFound = true;
                         ?>
                         <article class="content-item">
-                            <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a>
-                            <p>(<?= $topicCount ?>)</p>
+                            <div class="item-category">
+                                <i class="fa-solid fa-chevron-right"></i>
+                                <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a>
+                                <span>(<?= $topicCount ?>)</span>
+                            </div>
+                            <button class="btn" id="btn-see-all">Tout voir <i class="fa-solid fa-chevron-right"></i></button>
                         </article>
+                        <?php if($topics) { ?>
+                            <article class="home-topics-list">
+                                <?php 
+                                    $maxTopics = 3; 
+                                    $topicCount = 0;
+                                    foreach($topics as $topic) { 
+                                        if($topicCount >= $maxTopics) break;?>
+                                    <div class="home-topic-item">
+                                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId() ?>">
+                                            <?= strlen($topic->getTitle()) > 20 ? substr($topic->getTitle(), 0, 35).'...' : $topic->getTitle() ?>
+                                        </a>
+                                        <div class="topic-item-details">
+                                                <p>par <span><?= $topic->getUser() ?></span></p>
+                                                <div class="topic-item-specs">
+                                                    <p>le <span><?= $topic->getCreationDate() ?></span></p>
+                                                    <p>(0)</p>
+                                                </div>
+                                        </div>
+                                    </div>
+                                <?php $topicCount++; } ?>
+                            </article>
+                        <?php } ?>
                     <?php } 
-                } 
+                }
                 
                 // Si aucune catégorie active n'a été trouvée
                 if (!$activeCategoriesFound) { ?>

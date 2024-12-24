@@ -18,10 +18,10 @@ class ForumController extends AbstractController implements ControllerInterface{
         $categories = $categoryManager->findAll(["name", "DESC"]);
         
         // Récupérer les derniers sujets tous confondus
-        $latestTopics = $topicManager->getLatestTopics(5) ?: [];
+        $latestTopics = $topicManager->getLatestTopics(3) ?: [];
         
         // Récupérer les derniers messages
-        $latestPosts = $postManager->getLatestPosts(5) ?: [];
+        $latestPosts = $postManager->getLatestPosts(3) ?: [];
     
         return [
             "view" => VIEW_DIR."home.php",

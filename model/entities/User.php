@@ -9,7 +9,10 @@ use Model\Managers\PostManager;
     En programmation orientée objet, une classe finale (final class) est une classe que vous ne pouvez pas étendre, c'est-à-dire qu'aucune autre classe ne peut hériter de cette classe. En d'autres termes, une classe finale ne peut pas être utilisée comme classe parente.
 */
 
-final class User extends Entity{
+final class User extends Entity {
+    const ROLE_ADMIN = 'Admin';
+    const ROLE_MOD = 'Mod';
+    const ROLE_MEMBER = 'Membre';
 
     private $id;
     private $nickName;
@@ -136,6 +139,15 @@ final class User extends Entity{
         $this->userRole = $userRole;
 
         return $this;
+    }
+
+
+    public function isAdmin() {
+        return $this->userRole === self::ROLE_ADMIN;
+    }
+
+    public function isMod() {
+        return $this->userRole === self::ROLE_MOD;
     }
 
     public function hasRole($role) {

@@ -236,12 +236,76 @@
                 text-decoration: none;
                 color: var(--primary-black);
                 transition: all 0.2s ease;
+                margin-top: 10px;
+                border-bottom: 1px solid var(--border-grey);
+
+                & .item-category {
+                    display: flex;
+                    align-items: center;
+                    width: 100px;
+                    justify-content: space-between;
+
+                    & i {
+                        color: var(--primary-dark-blue);
+                    }
+
+                    & a {
+                        font-weight: var(--fw-semibold);
+                    }
+
+                    & span {
+                        color: var(--primary-grey)
+                    }
+                }
+                              
+                & #btn-see-all {
+                    border-radius: 25px;
+                    padding: 0.7em;
+                    border: 2px solid var(--border-purple);
+                    color: var(--border-purple);    
+                    transition: var(--transition);
+
+                    &:hover {
+                        border: 2px solid var(--border-purple);
+                        color: var(--primary-white);
+                        background-color: var(--primary-purple);
+                    }
+
+                    &:active {
+                        border: 2px solid var(--border-purple);
+                        background-color: var(--primary-white);
+                        color: var(--primary-purple);
+                    }
+
+                }
+
             }
 
             & .content-item:hover {
                 color: var(--primary-purple);
             }
 
+            & .home-topics-list {
+                margin-top: 10px;
+
+                & .home-topic-item {
+                    display: flex;
+                    justify-content: space-between;
+
+                    & .topic-item-details {
+                        display: flex;
+                        justify-content: space-between;
+                        min-width: 50%;   
+                        
+                        & .topic-item-specs {
+                            display: flex;
+                            justify-content: space-between;
+                            gap: 20px;
+                        }
+                    }
+                }
+                
+            }
         }
         
         & .contents-header {
@@ -774,11 +838,22 @@
 
         }
 
-        & .post-topic-category,
-        .post-post-category {
-            color: var(--primary-purple);
-        }
+        & .post-topic-wrapper,
+        .post-post-wrapper {
 
+            display : flex;
+            justify-content: space-between;
+            gap: 1rem;
+
+
+            & .post-topic-category,
+            .post-post-category {
+                width: 100px;
+                color: var(--primary-purple);
+            }
+    
+        }
+        
         & .post-topic-date,
         .post-post-date {
             display: flex;

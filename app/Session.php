@@ -50,7 +50,7 @@ class Session{
     }
 
     public static function isModerator(){
-        if(self::getUser() && self::getUser()->hasRole("Moderator")){
+        if(self::getUser() && self::getUser()->hasRole("Mod")){
             return true;
         }
         return false;

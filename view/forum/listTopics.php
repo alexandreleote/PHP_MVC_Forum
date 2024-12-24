@@ -13,7 +13,9 @@
     <section class="contents-container">
         <header class="contents-header">
             <h3>Tous les sujets : <?= $category ?></h3>
-            <button class="btn" id="btn-new-content">Nouveau sujet</button>
+            <?php if(App\Session::isConnected()) { ?>
+                <button class="btn" id="btn-new-content">Nouveau sujet</button>
+            <?php } ?>    
         </header>
 
         <div class="contents-main">
@@ -22,7 +24,7 @@
                 if(empty($topics)) { ?>
                     <p>Soyez le premier à écrire dans cette catégorie</p>
                 <?php } else {
-                    foreach($topics as $topic ){ ?>
+                    foreach($topics as $topic) { ?>
                         <div class="discussion-item">
                             <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
                             <span>par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?></span>
