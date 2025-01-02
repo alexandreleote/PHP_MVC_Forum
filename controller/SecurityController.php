@@ -105,12 +105,80 @@ class SecurityController extends AbstractController{
         ];
     }
 
-    public function modify () {
-
+    public function modify() {
         $userManager = new UserManager();
-
         $user = Session::getUser();
-
+        
+        // Récupération et nettoyage des données du formulaire
+        $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, FILTER_VALIDATE_EMAIL);
+        $emailConfirm = filter_input(INPUT_POST, "emailConfirm", FILTER_SANITIZE_EMAIL, FILTER_VALIDATE_EMAIL);
+        $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $passwordConfirm = filter_input(INPUT_POST, "passwordConfirm", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    
+        // Si le formulaire est soumis
+        if($username || $email || $password) {
+            $data = [];
+            $errors = [];
+    
+            // Validation du nom d'utilisateur
+            if($username && $username !== $user->getNickName()) {
+                $data["nickName"] = $username;
+            }
+    
+            // Validation de l'email
+            if($email) {
+                if($email === $emailConfirm) {
+                    if($email !== $user->getEmail()) {
+                        // Vérifier si l'email n'est pas déjà utilisé par un autre utilisateur
+                        if(!$userManager->isEmailUsed($email) || $email === $user->getEmail()) {
+                            $data["email"] = $email;
+                        } else {
+                            $errors[] = "Cette adresse email est déjà utilisée";
+                        }
+                    }
+                } else {
+                    $errors[] = "Les adresses email ne correspondent pas";
+                }
+            }
+    
+            // Validation du mot de passe
+            if($password) {
+                // Même regex que dans register()
+                $password_regex = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/";
+                
+                if($password === $passwordConfirm) {
+                    if(preg_match($password_regex, $password)) {
+                        $data["password"] = password_hash($password, PASSWORD_DEFAULT);
+                    } else {
+                        $errors[] = "Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial";
+                    }
+                } else {
+                    $errors[] = "Les mots de passe ne correspondent pas";
+                }
+            }
+    
+            // S'il y a des données à mettre à jour et aucune erreur
+            if(!empty($data) && empty($errors)) {
+                try {
+                    // Mise à jour en base de données
+                    $userManager->updateUser($user->getId(), $data);
+                    
+                    // Mise à jour de la session avec les nouvelles données
+                    $updatedUser = $userManager->findOneById($user->getId());
+                    Session::setUser($updatedUser);
+                    
+                    Session::addFlash("success", "Vos informations ont été mises à jour avec succès");
+                } catch(\Exception $e) {
+                    Session::addFlash("error", "Une erreur est survenue lors de la mise à jour");
+                }
+            } else if(!empty($errors)) {
+                foreach($errors as $error) {
+                    Session::addFlash("error", $error);
+                }
+            }
+        }
+    
         $this->redirectTo("security", "profile");
     }
 

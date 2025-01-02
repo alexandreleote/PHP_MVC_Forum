@@ -15,9 +15,13 @@ class ForumController extends AbstractController implements ControllerInterface{
         $topicManager = new TopicManager();
         $postManager = new PostManager();
     
-        $categories = $categoryManager->findAll(["name", "DESC"]);
+        // Récupérer les 3 dernières catégories
+        $mainCategories = $categoryManager->getMainCategories() ?: [];
         
-        // Récupérer les derniers sujets tous confondus
+        // Récupérer le top 10 des catégories
+        $topCategories = $categoryManager->getTopCategories(10) ?: [];
+        
+        // Récupérer les derniers sujets
         $latestTopics = $topicManager->getLatestTopics(3) ?: [];
         
         // Récupérer les derniers messages
@@ -27,7 +31,8 @@ class ForumController extends AbstractController implements ControllerInterface{
             "view" => VIEW_DIR."home.php",
             "meta_description" => "Page d'accueil du forum",
             "data" => [
-                "categories" => $categories ?: [],
+                "mainCategories" => $mainCategories,
+                "topCategories" => $topCategories,
                 "latestTopics" => $latestTopics,
                 "latestPosts" => $latestPosts
             ]
@@ -118,20 +123,24 @@ class ForumController extends AbstractController implements ControllerInterface{
             }
     
             if ($title && $content && $category_id) {
+                $dateTime = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+                
                 $topicData = [
                     "title" => $title,
                     "category_id" => $category_id,
-                    "user_id" => $author->getId()
+                    "user_id" => $author->getId(),
+                    "creationDate" => $dateTime->format('Y-m-d H:i:s')
                 ];
-    
+        
                 $topicId = $topicManager->add($topicData);
                 
                 $postData = [
                     "content" => $content,
                     "user_id" => $author->getId(),
-                    "topic_id" => $topicId
+                    "topic_id" => $topicId,
+                    "creationDate" => $dateTime->format('Y-m-d H:i:s')
                 ];
-    
+        
                 $postManager = new PostManager();
                 $postManager->add($postData);
     

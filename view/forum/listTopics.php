@@ -1,6 +1,6 @@
 <?php
-    $category = $result["data"]['category']; 
-    $topics = $result["data"]['topics']; 
+    $category = $result["data"]['category'] ?? []; 
+    $topics = $result["data"]['topics'] ?? []; 
 ?>
 
 <section class="information-container">
@@ -26,7 +26,10 @@
                 <?php } else {
                     foreach($topics as $topic) { ?>
                         <div class="discussion-item">
-                            <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
+                            <div class="discussion-item-title">
+                                <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
+                                <span><?= $topic->getIsLocked() ? '<i class="fas fa-lock "></i>' : '' ?></span>
+                            </div>
                             <span>par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?></span>
                         </div>
                     <?php } ?>

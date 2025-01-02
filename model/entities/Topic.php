@@ -15,6 +15,8 @@ final class Topic extends Entity{
     private $category;
     private $creationDate;
     private $isLocked;
+    private $posts;
+    private $lastActivity;
 
     public function __construct($data){         
         $this->hydrate($data);        
@@ -75,8 +77,11 @@ final class Topic extends Entity{
      * Get the value of creationDate
      *
      */ 
-    public function getCreationDate(){
-        return $this->creationDate;
+    public function getCreationDate() {
+        if ($this->creationDate) {
+            return date('d-m-Y H:i', strtotime($this->creationDate));
+        }
+        return '';
     }
 
     /**
@@ -135,6 +140,29 @@ final class Topic extends Entity{
     public function getPosts() {
         return \Model\Managers\PostManager::getPostsByTopic($this->id);
     }
+
+    public function getPostsCount() {
+        return \Model\Managers\PostManager::countPosts($this->id);
+    }
+
+    public function setPostsCount($count) {
+        $this->postsCount = $count;
+        return $this;
+    }
+
+
+    public function getLastActivity() {
+        // Si lastActivity est null, retourner la date de création
+        return $this->lastActivity 
+            ? date('d-m-Y à H:i', strtotime($this->lastActivity)) 
+            : $this->getCreationDate();
+    }
+
+    public function setLastActivity($lastActivity) {
+        $this->lastActivity = $lastActivity;
+        return $this;
+    }
+
 
     public function __toString(){
         return $this->title;

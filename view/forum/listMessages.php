@@ -6,7 +6,7 @@
 
 <section class="information-container">
     <div class="information">
-        <h2><a href="index.php?ctrl=forum&action=index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $topic->getCategory()->getId() ?>"><?= $topic->getCategory() ?></a> / <?= $topic ?></h2>
+        <h2><a href="index.php?ctrl=forum&action=index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $topic->getCategory()->getId() ?>"><?= $topic->getCategory() ?></a> / <?= $topic ?> <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '' ?></h2>
     </div>
 </section>
 
@@ -14,7 +14,7 @@
     <section class="contents-container">
         <header class="contents-header">
             <div>
-                <h3><?= $topic ?></h3> 
+                <h3><?= $topic ?> <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '' ?></h3> 
                     <?php if(App\Session::isAdmin()) { ?>
                         <form action="index.php?ctrl=forum&action=<?= $topic->getLocked() ? 'unlockTopic' : 'lockTopic' ?>&id=<?= $topic->getId() ?>" method="post" class="">
                             <button type="submit" class="">
@@ -22,7 +22,7 @@
                             </button>
                         </form>
                     <?php } else if (App\Session::isAdmin()){ ?>
-                        <?= $topic->getLocked() ? '<i class="fas fa-lock text-danger"></i>' : '<i class="fas fa-lock-open text-success"></i>' ?>
+                        <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-lock-open"></i>' ?>
                     <?php } ?>
             </div>
                 <?php 
@@ -38,15 +38,18 @@
 
                     $class = App\Session::isAuthor($post->getUser()->getId()) ? "author" : "contributor";
                     ?>
-                    <p class=" <?= $class ?> "><?= $post->getContent() ?> par <?= $post->getUser() ?> le <?= $post->getCreationDate() ?></p>
-            <?php 
-                // Vérifier si l'utilisateur peut supprimer le message
-                if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
-                    <form action="index.php?ctrl=forum&action=deletePost&id=<?= $post->getId() ?>" method="post">
-                        <button type="submit" class="btn delete-btn">Supprimer <i class="fa-solid fa-trash"></i></button>
-                    </form>
-                <?php } 
-            } ?>
+                    <div class="discussion-item <?= $class ?>">
+                        <p><?= $post->getContent() ?></p>
+                        <span><?= $post->getUser() ?>, le <?= $post->getCreationDate() ?></span>
+                        <?php 
+                            // Vérifier si l'utilisateur peut supprimer le message
+                            if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
+                                <form action="index.php?ctrl=forum&action=deletePost&id=<?= $post->getId() ?>" method="post">
+                                    <button type="submit" class="btn delete-btn message-delete">Supprimer   <i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            <?php } ?>
+                    </div>
+        <?php } ?>
         </div>
 
         <div class="contents-form">

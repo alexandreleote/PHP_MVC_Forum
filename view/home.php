@@ -1,5 +1,8 @@
 <?php
-    $categories = $result["data"]['categories'] ?? [];
+    $categoriesArray = [];
+    if (isset($result["data"]['categories'])) {
+        $categoriesArray = iterator_to_array($result["data"]['categories']) ?: [];
+    }
 ?>
 
 <section>
@@ -18,12 +21,11 @@
         <div class="contents-list">
             <?php 
             $activeCategoriesFound = false;
-            if(!empty($categories)) { 
-                foreach ($categories as $category) { 
+            if(!empty($categoriesArray)) { 
+                foreach ($categoriesArray as $category) { 
                     $topics = $category->getTopics();
                     $topicCount = count($topics);
                     
-                    // N'afficher que les catégories avec des sujets
                     if ($topicCount > 0) {
                         $activeCategoriesFound = true;
                         ?>
@@ -33,7 +35,7 @@
                                 <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a>
                                 <span>(<?= $topicCount ?>)</span>
                             </div>
-                            <button class="btn" id="btn-see-all">Tout voir <i class="fa-solid fa-chevron-right"></i></button>
+                            <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>" class="btn" id="btn-see-all">Tout voir <i class="fa-solid fa-chevron-right"></i></a>
                         </article>
                         <?php if($topics) { ?>
                             <article class="home-topics-list">
@@ -43,14 +45,17 @@
                                     foreach($topics as $topic) { 
                                         if($topicCount >= $maxTopics) break;?>
                                     <div class="home-topic-item">
-                                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId() ?>">
-                                            <?= strlen($topic->getTitle()) > 20 ? substr($topic->getTitle(), 0, 35).'...' : $topic->getTitle() ?>
-                                        </a>
+                                        <div>
+                                            <span><?= $topic->getIsLocked() ? '<i class="fas fa-lock "></i>' : '' ?></span>
+                                            <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId() ?>">
+                                                <?= strlen($topic->getTitle()) > 20 ? substr($topic->getTitle(), 0, 35).'...' : $topic->getTitle() ?>
+                                            </a>
+                                        </div>
                                         <div class="topic-item-details">
-                                                <p>par <span><?= $topic->getUser() ?></span></p>
+                                                <p><?= $topic->getUser() ?></p>
                                                 <div class="topic-item-specs">
-                                                    <p>le <span><?= $topic->getCreationDate() ?></span></p>
-                                                    <p>(0)</p>
+                                                    <p><?= $topic->getLastActivity() ?></p>
+                                                    <p>(<?= $topic->getPostsCount() ?>)</p>
                                                 </div>
                                         </div>
                                     </div>
@@ -60,7 +65,6 @@
                     <?php } 
                 }
                 
-                // Si aucune catégorie active n'a été trouvée
                 if (!$activeCategoriesFound) { ?>
                     <p>Aucune catégorie avec des sujets n'est disponible</p>
                 <?php }
@@ -71,11 +75,13 @@
     </section>
 
     <aside class="aside-container">
-        <h3>Dans la discussion</h3>
-        <ul class="members-list">
-            <li><a href="#" class="member-item">Nom du membre 1</a></li>
-            <li><a href="#" class="member-item">Nom du membre 2</a></li>
-            <li><a href="#" class="member-item">Nom du membre 3</a></li>
-        </ul>
+        <h3>Les Stacks</h3>
+        <div class="main-stacks-list">
+            <ul>
+                <?php foreach ($categoriesArray as $category) { ?>
+                    <li><i class="fa-solid fa-chevron-right"></i><a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a></li>
+                <?php } ?>
+            </ul>
+        </div>
     </aside>
 </section>

@@ -56,7 +56,7 @@
                                     </div>
                                     <div class="post-topic-title">
                                         <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdTopic->getId() ?>">
-                                            <?= strlen($createdTopic->getTitle()) > 20 ? substr($createdTopic->getTitle(), 0, 50).'...' : $createdTopic->getTitle() ?>
+                                            <?= strlen($createdTopic->getTitle()) > 20 ? substr($createdTopic->getTitle(), 0, 65).'...' : $createdTopic->getTitle() ?>
                                         </a>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                                     </div>    
                                     <div class="post-post-title">
                                         <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdPost->getTopic()->getId() ?>">
-                                            <?= strlen($createdPost->getTopic()->getTitle()) > 20 ? substr($createdPost->getTopic()->getTitle(), 0, 50).'...' : $createdPost->getTopic()->getTitle() ?>
+                                            <?= strlen($createdPost->getTopic()->getTitle()) > 20 ? substr($createdPost->getTopic()->getTitle(), 0, 65).'...' : $createdPost->getTopic()->getTitle() ?>
                                         </a>
                                     </div>
                                 </div>
@@ -142,17 +142,16 @@
                         </div>
                     </div>
                 </div>
+                <span class="contents-form-info">
+                    * Le pseudonyme ne doit pas comporter d’insultes ou d’injures sous peine de banissement temporaire
+                    ou permanent si cas extrêmement grave (se renseigner sur les <a href="#">conditions d’utilisation</a>)
+                </span>
+    
+                <div class="contents-form-footer">
+                        <button type="button" class="btn delete-btn" id="delete-user-btn">Supprimer le compte <i class="fa-solid fa-trash"></i></button>
+                        <button type="submit" class="btn btn-publish-content">Modifier <i class="fa-solid fa-paper-plane"></i></button>
+                </div>
             </form>
-
-            <span class="contents-form-info">
-                * Le pseudonyme ne doit pas comporter d’insultes ou d’injures sous peine de banissement temporaire
-                ou permanent si cas extrêmement grave (se renseigner sur les <a href="#">conditions d’utilisation</a>)
-            </span>
-
-            <div class="contents-form-footer">
-                    <button type="button" class="btn delete-btn" id="delete-user-btn">Supprimer le compte <i class="fa-solid fa-trash"></i></button>
-                    <button type="submit" class="btn btn-publish-content">Modifier <i class="fa-solid fa-paper-plane"></i></button>
-            </div>
         </div>
     </section>
 

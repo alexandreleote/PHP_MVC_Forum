@@ -108,4 +108,29 @@ class UserManager extends Manager{
         
         return $result ? new \Model\Entities\User($result) : null;
     }
+
+    public function updateUser($userId, array $data) {
+        if (empty($data)) {
+            return false;
+        }
+    
+        $sql = "UPDATE ".$this->tableName." SET ";
+        $updateFields = [];
+        $params = [];
+        
+        foreach($data as $key => $value) {
+            $updateFields[] = "$key = :$key";
+            $params[$key] = $value;
+        }
+        
+        $sql .= implode(', ', $updateFields);
+        $sql .= " WHERE id_user = :userId";
+        $params['userId'] = $userId;
+    
+        // Debug
+        error_log("SQL Query: " . $sql);
+        error_log("Params: " . print_r($params, true));
+    
+        return DAO::update($sql, $params);
+    }
 }
