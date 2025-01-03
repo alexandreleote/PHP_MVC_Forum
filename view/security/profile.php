@@ -1,19 +1,29 @@
 <?php
-    $user = $result['data']['user'];
-
+    $user = $result['data']['user'] ?? null;
+    
+    if (!$user) {
+        // Rediriger si aucun utilisateur n'est trouvé
+        header("Location: index.php?ctrl=home&action=index");
+        exit();
+    }
 ?>
 
 <section class="information-container">
     <div class="information">
-        <h2><a href="index.php?ctrl=home&action=index">Accueil</a> / Profil : <?= $user ?></h2>
+        <h2>
+            <a href="index.php?ctrl=home&action=index">Accueil</a> / 
+            Profil : <?= $user->getNickName() ?>
+        </h2>
     </div>
 </section>
 
 <article class="main-container">
     <section class="contents-container">
         <header class="contents-header">
-            <h3>Mes informations :</h3>
-            <button class="btn" id="btn-new-content">Modifier</button>
+            <h3>Informations de l'utilisateur :</h3>
+            <?php if ($result['data']['isCurrentUser']) { ?>
+                <button class="btn" id="btn-new-content">Modifier</button>
+            <?php } ?>
         </header>
 
         <div class="contents-main">
@@ -30,16 +40,16 @@
                     <?php } ?>
                 </div>
                 <div class="subscription-date">
-                    <p>depuis le</p>
+                    <p>Inscrit depuis le</p>
                     <span><?= $user->getSubscriptionDate() ?></span>
                 </div>
-                <p>sujets créés (<?= $user->countCreatedTopics() ?>)</p>
-                <p>messages enoyés (<?= $user->countCreatedPosts() ?>)</p>
+                <p>Sujets créés (<?= $user->countCreatedTopics() ?>)</p>
+                <p>Messages envoyés (<?= $user->countCreatedPosts() ?>)</p>
             </div>
         </div>
 
         <div class="contents-created-topics">
-            <h4>Les derniers sujets créés</h4>
+            <h4>Derniers sujets créés</h4>
             <div class="contents-topics-list">
                 <?php 
                 $createdTopics = $user->getCreatedTopics();
@@ -49,60 +59,50 @@
                             <li class="post-topic-item">
                                 <div class="post-topic-wrapper">
                                     <div class="post-topic-category">
-                                        <i class="fa-solid fa-chevron-right"></i>
                                         <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdTopic->getCategory()->getId() ?>">
-                                            <?= $createdTopic->getCategory() ?>
+                                            <?= $createdTopic->getCategory()->getName() ?>
                                         </a>
                                     </div>
                                     <div class="post-topic-title">
                                         <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdTopic->getId() ?>">
-                                            <?= strlen($createdTopic->getTitle()) > 20 ? substr($createdTopic->getTitle(), 0, 65).'...' : $createdTopic->getTitle() ?>
+                                            <?= $createdTopic->getTitle() ?>
                                         </a>
                                     </div>
-                                </div>
-                                <div class="post-topic-date">
-                                    <p>le</p><span><?= $createdTopic->getCreationDate() ?></span>
                                 </div>
                             </li>
                         <?php } ?>
                     </ul>
                 <?php } else { ?>
-                    <p>Aucun sujet créé pour le moment.</p>
+                    <p>Aucun sujet créé</p>
                 <?php } ?>
             </div>
         </div>
 
         <div class="contents-created-posts">
-            <h4>Les derniers messages envoyés</h4>
+            <h4>Derniers messages envoyés</h4>
             <div class="contents-posts-list">
                 <?php 
                 $createdPosts = $user->getCreatedPosts();
                 if (!empty($createdPosts)) { ?>
                     <ul>
                         <?php foreach ($createdPosts as $createdPost) { ?>
-                            <li class="post-post-item">
-                                <div class="post-post-wrapper">
-                                    <div class="post-post-category">
-                                        <i class="fa-solid fa-chevron-right"></i>
-                                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdPost->getCategory()->getId() ?>">
-                                            <?= $createdPost->getCategory() ?>
-                                        </a>
-                                    </div>    
-                                    <div class="post-post-title">
+                            <li class="post-item">
+                                <div class="post-wrapper">
+                                    <div class="post-topic">
                                         <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdPost->getTopic()->getId() ?>">
-                                            <?= strlen($createdPost->getTopic()->getTitle()) > 20 ? substr($createdPost->getTopic()->getTitle(), 0, 65).'...' : $createdPost->getTopic()->getTitle() ?>
+                                            <?= $createdPost->getTopic()->getTitle() ?>
                                         </a>
                                     </div>
-                                </div>
-                                <div class="post-post-date">
-                                    <p>le</p><span><?= $createdPost->getCreationDate() ?></span>
+                                    <div class="post-content">
+                                        <?= substr($createdPost->getContent(), 0, 100) ?>...
+                                    </div>
                                 </div>
                             </li>
                         <?php } ?>
                     </ul>
-                    <?php } else { ?>
-                        <p>Aucun message envoyé pour le moment.</p>    
-                    <?php } ?>  
+                <?php } else { ?>
+                    <p>Aucun message envoyé</p>
+                <?php } ?>
             </div>
         </div>
 
@@ -156,10 +156,20 @@
     </section>
 
     <aside class="aside-container">
-        <h3>Les stacks </h3>
-        <ul class="">
-            <li>Ici les stacks</li>
-            <li>Qui sont les stacks</li>
-        </ul>
+        <h3>Les Stacks</h3>
+        <div class="main-stacks-list">
+            <ul>
+                <?php 
+                $categories = $result['data']['categories'] ?? [];
+                foreach ($categories as $category) { ?>
+                    <li>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>">
+                            <?= $category->getName() ?>
+                        </a>
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
     </aside>
 </article>

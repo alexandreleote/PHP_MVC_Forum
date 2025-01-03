@@ -103,7 +103,7 @@ class TopicManager extends Manager{
                 ORDER BY lastActivity DESC
                 LIMIT :limit";
         
-        $results = DAO::select($sql, ['limit' => $limit]);
+        $results = DAO::select($sql, ['limit' => $limit], true);
         
         $topics = [];
         if ($results) {

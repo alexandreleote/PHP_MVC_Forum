@@ -7,6 +7,7 @@ use App\ControllerInterface;
 use Model\Managers\CategoryManager;
 use Model\Managers\TopicManager;
 use Model\Managers\PostManager;
+use Model\Managers\UserManager;
 
 class ForumController extends AbstractController implements ControllerInterface{
 
@@ -17,10 +18,7 @@ class ForumController extends AbstractController implements ControllerInterface{
     
         // Récupérer les 3 dernières catégories
         $mainCategories = $categoryManager->getMainCategories() ?: [];
-        
-        // Récupérer le top 10 des catégories
-        $topCategories = $categoryManager->getTopCategories(10) ?: [];
-        
+                
         // Récupérer les derniers sujets
         $latestTopics = $topicManager->getLatestTopics(3) ?: [];
         
@@ -40,6 +38,20 @@ class ForumController extends AbstractController implements ControllerInterface{
     }
 
     /* Catégorie */
+
+    // Afficher les catégories
+    public function listCategories() {
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->findAll(["id_category", ""]);
+        
+        return [
+            "view" => VIEW_DIR."forum/listCategories.php",
+            "meta_description" => "Liste des catégories",
+            "data" => [
+                "categories" => $categories
+            ]
+        ];
+    }
 
     // Afficher les sujets par catégorie
     public function listTopicsByCategory($id) {
@@ -72,10 +84,14 @@ class ForumController extends AbstractController implements ControllerInterface{
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
         $postManager = new PostManager();
-        
+        $userManager = new UserManager();
+    
         $topic = $topicManager->findOneById($id);
         $category = $categoryManager->findOneById($id);
         $posts = $postManager->displayAllPostsByTopic($id);
+
+        // Retrieve unique users who have posted in this topic
+        $users = $userManager->getUsersByTopic($id);
 
         if(!$topic) {
             $this->redirectTo("home", "index");
@@ -86,7 +102,8 @@ class ForumController extends AbstractController implements ControllerInterface{
                 "data" => [
                     "category" => $category,
                     "topic" => $topic,
-                    "posts" => $posts
+                    "posts" => $posts,
+                    "users" => $users
                 ]
             ];
         }
@@ -159,8 +176,6 @@ class ForumController extends AbstractController implements ControllerInterface{
         ];
     }
 
-    // Verrouiler le sujet
-    
     // Verrouiller le sujet
     public function lockTopic(int $id) {
         $topicManager = new TopicManager();

@@ -27,10 +27,14 @@
                     foreach($topics as $topic) { ?>
                         <div class="discussion-item">
                             <div class="discussion-item-title">
-                                <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
-                                <span><?= $topic->getIsLocked() ? '<i class="fas fa-lock "></i>' : '' ?></span>
+                                <div class="discussion-item-name">
+                                    <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
+                                    <span><?= $topic->getIsLocked() ? '<i class="fas fa-lock "></i>' : '' ?></span>
+                                </div>
+                                <div class="discussion-item-info">
+                                    <span>par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?></span>
+                                </div>
                             </div>
-                            <span>par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?></span>
                         </div>
                     <?php } ?>
                 <?php } ?>

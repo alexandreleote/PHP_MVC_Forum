@@ -90,21 +90,40 @@ class SecurityController extends AbstractController{
         $this->redirectTo("home", "index");
     }
 
-    public function profile () {
-
+    public function profile ($id = null) {
         $userManager = new UserManager();
+        $categoryManager = new \Model\Managers\CategoryManager();
 
-        $user = Session::getUser();
+        // Si un ID est passé, chercher l'utilisateur par son ID
+        if ($id !== null) {
+            $user = $userManager->findOneById($id);
+            
+            if (!$user) {
+                // Rediriger si l'utilisateur n'existe pas
+                $this->redirectTo("home", "index");
+            }
+        } else {
+            // Sinon, utiliser l'utilisateur connecté
+            $user = Session::getUser();
+            
+            if (!$user) {
+                $this->redirectTo("security", "login");
+            }
+        }
+
+        // Récupérer les catégories
+        $categories = $categoryManager->findAll(["id_category", ""]);
 
         return [
             "view" => VIEW_DIR."security/profile.php",
-            "meta_description" => "Profil personnel :".$user,
+            "meta_description" => "Profil de : ".$user->getNickName(),
             "data" => [
-                "user" => $user
+                "user" => $user,
+                "categories" => $categories,
+                "isCurrentUser" => ($id === null || $id == Session::getUser()->getId())
             ]
         ];
     }
-
     public function modify() {
         $userManager = new UserManager();
         $user = Session::getUser();

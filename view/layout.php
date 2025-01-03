@@ -20,12 +20,12 @@
                     <nav class="navbar">
                         <div id="nav-left">
                             <a href="index.php">Accueil</a>
-                            <a href="">Catégories</a>
-                            <a href="">Besoin d'aide ?</a>
+                            <a href="index.php?ctrl=forum&action=listCategories">Catégories</a>
+                            <a href="index.php?ctrl=home&action=help">Besoin d'aide ?</a>
                             <?php
                             if(App\Session::isAdmin()){
                                 ?>
-                                <a href="index.php?ctrl=home&action=users">Communauté</a>
+                                <a href="index.php?ctrl=home&action=listUsers">Communauté</a>
                             <?php } ?>
                         </div>
                         <div id="nav-right">
@@ -41,7 +41,6 @@
                                 ?>
                                 <a href="index.php?ctrl=security&action=login">Connexion</a>
                                 <a href="index.php?ctrl=security&action=register">Inscription</a>
-                                <a href="index.php?ctrl=forum&action=index">Liste des catégories</a>
                             <?php
                             }
                         ?>

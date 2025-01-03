@@ -13,17 +13,15 @@
 <article class="main-container">
     <section class="contents-container">
         <header class="contents-header">
-            <div>
-                <h3><?= $topic ?> <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '' ?></h3> 
-                    <?php if(App\Session::isAdmin()) { ?>
-                        <form action="index.php?ctrl=forum&action=<?= $topic->getLocked() ? 'unlockTopic' : 'lockTopic' ?>&id=<?= $topic->getId() ?>" method="post" class="">
-                            <button type="submit" class="">
-                                <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-lock-open"></i>' ?>
-                            </button>
-                        </form>
-                    <?php } else if (App\Session::isAdmin()){ ?>
-                        <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-lock-open"></i>' ?>
-                    <?php } ?>
+            <div class="contents-header-title">
+                <h3><?= $topic ?></h3> 
+                <?php if(App\Session::isAdmin()) { ?>
+                    <form action="index.php?ctrl=forum&action=<?= $topic->getLocked() ? 'unlockTopic' : 'lockTopic' ?>&id=<?= $topic->getId() ?>" method="post" class="">
+                        <button type="submit" class="btn edit-btn">
+                            <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-lock-open"></i>' ?>
+                        </button>
+                    </form>
+                <?php } ?>
             </div>
                 <?php 
                     if(!$topic->getIsLocked() && App\Session::isConnected()) { ?>
@@ -72,10 +70,16 @@
 
     <aside class="aside-container">
         <h3>Dans la discussion</h3>
-        <ul class="">
-            <li><a href="#" class="member-item">Nom du membre 1</a></li>
-            <li><a href="#" class="member-item">Nom du membre 2</a></li>
-            <li><a href="#" class="member-item">Nom du membre 3</a></li>
-        </ul>
+        <?php 
+        $users = $result["data"]['users'] ?? [];
+        if (!empty($users)) { 
+            foreach ($users as $user) { ?>
+                <div class="member-item">
+                    <a href="index.php?ctrl=security&action=profile&id=<?= $user->getId() ?>"><?= $user->getNickName() ?></a>
+                </div>
+        <?php } 
+        } else { ?>
+            <p>Aucun utilisateur n'a encore participé à cette discussion</p>
+        <?php } ?>
     </aside>
 </article>

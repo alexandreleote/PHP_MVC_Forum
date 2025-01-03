@@ -133,4 +133,18 @@ class UserManager extends Manager{
     
         return DAO::update($sql, $params);
     }
+
+    
+    // Récupérer les utilisateurs qui ont posté dans un sujet
+    public function getUsersByTopic(int $topicId) {
+        $sql = "SELECT DISTINCT u.* 
+                FROM user u
+                JOIN message m ON u.id_user = m.user_id
+                WHERE m.topic_id = :topicId";
+        
+        return $this->getMultipleResults(
+            DAO::select($sql, ['topicId' => $topicId], true),
+            $this->className
+        );
+    }
 }
