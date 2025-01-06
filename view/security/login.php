@@ -9,7 +9,12 @@
                 <div class="form-header">
                     <input type="email" name="email" id="email" placeholder="Identifiant" required>
 
-                    <input type="password" name="password" id="password" placeholder="Mot de passe" required>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" placeholder="Mot de passe" required>
+                        <button type="button" id="togglePassword" class="toggle-password">
+                            <i class="fa-solid fa-eye-slash" id="passwordToggleIcon"></i>
+                        </button>
+                    </div>
                     <p><a href="index.php?ctrl=security&action=forgotPassword">Mot de passe oublié ?</a></p>
                 </div>
                 

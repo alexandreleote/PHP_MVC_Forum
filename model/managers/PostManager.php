@@ -73,7 +73,7 @@ class PostManager extends Manager{
     public static function getPostsByUser($userId) {
         $sql = "SELECT m.id_message,
                        m.content,
-                       DATE_FORMAT(m.creationDate, '%d-%m-%Y %H:%i') AS creationDate,
+                       DATE_FORMAT(m.creationDate, '%d-%m-%Y à %H:%i') AS creationDate,
                        m.user_id,
                        m.topic_id,
                        t.category_id

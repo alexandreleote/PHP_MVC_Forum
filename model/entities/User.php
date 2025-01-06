@@ -2,6 +2,7 @@
 namespace Model\Entities;
 
 use App\Entity;
+use Model\Managers\CategoryManager;
 use Model\Managers\TopicManager;
 use Model\Managers\PostManager;
 
@@ -20,6 +21,7 @@ final class User extends Entity {
     private $password;
     private $subscriptionDate;
     private $userRole;
+    private $messageCount;
 
     public function __construct($data){         
         $this->hydrate($data);        
@@ -141,6 +143,22 @@ final class User extends Entity {
         return $this;
     }
 
+    /**
+     * Get the message count
+     */
+    public function getMessageCount() {
+        return $this->messageCount;
+    }
+
+    /**
+     * Set the message count
+     *
+     * @return self
+     */
+    public function setMessageCount($messageCount) {
+        $this->messageCount = $messageCount;
+        return $this;
+    }
 
     public function isAdmin() {
         return $this->userRole === self::ROLE_ADMIN;

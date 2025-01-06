@@ -28,11 +28,12 @@
                         <div class="discussion-item">
                             <div class="discussion-item-title">
                                 <div class="discussion-item-name">
-                                    <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
                                     <span><?= $topic->getIsLocked() ? '<i class="fas fa-lock "></i>' : '' ?></span>
+                                    <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $topic->getId()?>"><?= $topic ?></a>
                                 </div>
                                 <div class="discussion-item-info">
-                                    <span>par <?= $topic->getUser() ?> le <?= $topic->getCreationDate() ?></span>
+                                    <a href="index.php?ctrl=security&action=profile&id=<?= $topic->getUser()->getId() ?>"><?= $topic->getUser() ?></a>
+                                    <span><?= $topic->getCreationDate() ?></span>
                                 </div>
                             </div>
                         </div>
@@ -62,10 +63,23 @@
 
     <aside class="aside-container">
         <h3>Les membres du mois</h3>
-        <ul class="">
-            <li><a href="#" class="member-item">Nom du membre 1</a></li>
-            <li><a href="#" class="member-item">Nom du membre 2</a></li>
-            <li><a href="#" class="member-item">Nom du membre 3</a></li>
-        </ul>
+        <?php 
+        if (isset($result["data"]['users']) && !empty($result["data"]['users'])) { ?>
+            <div class="main-aside-list">
+                <?php foreach ($result["data"]['users'] as $user) { ?>
+                    <div class="aside-item">
+                        <div class="aside-item-name">
+                            <i class="fa-solid fa-user"></i>
+                            <a href="index.php?ctrl=security&action=profile&id=<?= $user->getId() ?>">
+                                <?= $user->getNickName() ?> 
+                            </a>
+                        </div>
+                        <span>(<?= $user->getMessageCount() ?>)</span>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } else { ?>
+            <p>Soyez le premier à poster un message</p>
+        <?php } ?>
     </aside>
 </article>

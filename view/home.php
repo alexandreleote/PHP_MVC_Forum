@@ -52,7 +52,7 @@
                                             </a>
                                         </div>
                                         <div class="topic-item-details">
-                                                <p><?= $topic->getUser() ?></p>
+                                                <a href="index.php?ctrl=security&action=profile&id=<?= $topic->getUser()->getId() ?>"><?= $topic->getUser() ?></a>
                                                 <div class="topic-item-specs">
                                                     <p><?= $topic->getLastActivity() ?></p>
                                                     <p>(<?= $topic->getPostsCount() ?>)</p>
@@ -76,12 +76,16 @@
 
     <aside class="aside-container">
         <h3>Les Stacks</h3>
-        <div class="main-stacks-list">
-            <ul>
-                <?php foreach ($categoriesArray as $category) { ?>
-                    <li><i class="fa-solid fa-chevron-right"></i><a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a></li>
-                <?php } ?>
-            </ul>
+        <div class="main-aside-list">
+            <?php foreach ($categoriesArray as $category) { ?>
+                <div class="aside-item">
+                    <div class="aside-item-name">
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>"><?= $category->getName() ?></a>
+                    </div>
+                    <span>(<?= count($category->getTopics()) ?>)</span>
+                </div>
+            <?php } ?>
         </div>
     </aside>
 </section>

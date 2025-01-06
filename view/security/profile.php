@@ -1,5 +1,6 @@
 <?php
     $user = $result['data']['user'] ?? null;
+    $categories = $result['data']['categories'] ?? [];
     
     if (!$user) {
         // Rediriger si aucun utilisateur n'est trouvé
@@ -59,6 +60,7 @@
                             <li class="post-topic-item">
                                 <div class="post-topic-wrapper">
                                     <div class="post-topic-category">
+                                        <i class="fa-solid fa-chevron-right"></i>
                                         <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdTopic->getCategory()->getId() ?>">
                                             <?= $createdTopic->getCategory()->getName() ?>
                                         </a>
@@ -67,6 +69,9 @@
                                         <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdTopic->getId() ?>">
                                             <?= $createdTopic->getTitle() ?>
                                         </a>
+                                    </div>
+                                    <div class="post-topic-date">
+                                        <p><?= $createdTopic->getCreationDate() ?></p>
                                     </div>
                                 </div>
                             </li>
@@ -86,15 +91,21 @@
                 if (!empty($createdPosts)) { ?>
                     <ul>
                         <?php foreach ($createdPosts as $createdPost) { ?>
-                            <li class="post-item">
-                                <div class="post-wrapper">
-                                    <div class="post-topic">
-                                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdPost->getTopic()->getId() ?>">
-                                            <?= $createdPost->getTopic()->getTitle() ?>
+                            <li class="post-post-item">
+                                <div class="post-post-wrapper">
+                                    <div class="post-post-category">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $createdTopic->getCategory()->getId() ?>">
+                                            <?= $createdTopic->getCategory()->getName() ?>
                                         </a>
                                     </div>
-                                    <div class="post-content">
-                                        <?= substr($createdPost->getContent(), 0, 100) ?>...
+                                    <div class="post-post-title">
+                                        <a href="index.php?ctrl=forum&action=discussionByTopic&id=<?= $createdTopic->getId() ?>">
+                                            <?= $createdTopic->getTitle() ?>
+                                        </a>
+                                    </div>
+                                    <div class="post-post-date">
+                                        <p><?= $createdPost->getCreationDate() ?></p>
                                     </div>
                                 </div>
                             </li>
@@ -138,7 +149,7 @@
                         </div>
                         <div>
                             <label for="passwordConfirm">Confirmer le mot de passe</label>
-                            <input type="password" name="passwordConfirm" id="passwordConfirm" placeholder="Confirmer le mot de passe">
+                            <input type="password" name="passwordConfirm" id="passwordConfirm" placeholder="Confirmer mot de passe">
                         </div>
                     </div>
                 </div>
@@ -157,19 +168,21 @@
 
     <aside class="aside-container">
         <h3>Les Stacks</h3>
-        <div class="main-stacks-list">
-            <ul>
+        <div class="main-aside-list">
+            <div class="aside-list">
                 <?php 
-                $categories = $result['data']['categories'] ?? [];
                 foreach ($categories as $category) { ?>
-                    <li>
-                        <i class="fa-solid fa-chevron-right"></i>
-                        <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>">
-                            <?= $category->getName() ?>
-                        </a>
-                    </li>
+                    <div class="aside-item">
+                        <div class="aside-item-name">
+                            <i class="fa-solid fa-chevron-right"></i>
+                            <a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $category->getId() ?>">
+                                <?= $category->getName() ?>
+                            </a>
+                        </div>
+                        <span>(<?= count($category->getTopics()) ?>)</span>
+                    </div>
                 <?php } ?>
-            </ul>
+            </div>
         </div>
     </aside>
 </article>

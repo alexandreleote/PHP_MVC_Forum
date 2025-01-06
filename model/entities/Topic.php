@@ -78,10 +78,7 @@ final class Topic extends Entity{
      *
      */ 
     public function getCreationDate() {
-        if ($this->creationDate) {
-            return date('d-m-Y H:i', strtotime($this->creationDate));
-        }
-        return '';
+        return $this->creationDate;
     }
 
     /**
@@ -138,15 +135,17 @@ final class Topic extends Entity{
     }
 
     public function getPosts() {
-        return \Model\Managers\PostManager::getPostsByTopic($this->id);
+        $postManager = new \Model\Managers\PostManager();
+        return $postManager->displayAllPostsByTopic($this->id);
     }
 
     public function getPostsCount() {
-        return \Model\Managers\PostManager::countPosts($this->id);
+        $postManager = new \Model\Managers\PostManager();
+        return $postManager->countPosts($this->id);
     }
 
     public function setPostsCount($count) {
-        $this->postsCount = $count;
+        $this->posts = $count;
         return $this;
     }
 

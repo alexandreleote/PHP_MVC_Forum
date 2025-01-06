@@ -16,8 +16,11 @@ class ForumController extends AbstractController implements ControllerInterface{
         $topicManager = new TopicManager();
         $postManager = new PostManager();
     
-        // Récupérer les 3 dernières catégories
+        // Récupérer les catégories principales
         $mainCategories = $categoryManager->getMainCategories() ?: [];
+        
+        // Récupérer les top catégories
+        $topCategories = $categoryManager->getTopCategories(3) ?: [];
                 
         // Récupérer les derniers sujets
         $latestTopics = $topicManager->getLatestTopics(3) ?: [];
@@ -55,25 +58,29 @@ class ForumController extends AbstractController implements ControllerInterface{
 
     // Afficher les sujets par catégorie
     public function listTopicsByCategory($id) {
-
-        $categoryManager = new CategoryManager();
-        $topicManager = new TopicManager();
+        $categoryManager = new \Model\Managers\CategoryManager();
+        $topicManager = new \Model\Managers\TopicManager();
         
         $category = $categoryManager->findOneById($id);
-        $topics = $topicManager->displayAllTopicsByCategory($id);
-
-        if(!$category) {
-            $this->redirectTo("home", "index");
-        } else {
-            return [
-                "view" => VIEW_DIR."forum/listTopics.php",
-                "meta_description" => "Liste des topics par catégorie : ".$category,
-                "data" => [
-                    "category" => $category,
-                    "topics" => $topics
-                ]
-            ];
+        
+        if (!$category) {
+            Session::addFlash('error', 'Catégorie non trouvée');
+            $this->redirectTo("forum", "listCategories");
+            return null;
         }
+        
+        $topics = $topicManager->displayAllTopicsByCategory($id);
+        $mostActiveUsers = $topicManager->getMostActiveUsersForCurrentMonth($id);
+        
+        return [
+            "view" => VIEW_DIR."forum/listTopics.php",
+            "meta_description" => "Sujets : ".$category,
+            "data" => [
+                "category" => $category,
+                "topics" => $topics,
+                "users" => $mostActiveUsers
+            ]
+        ];
     }
 
     /* Sujets */
@@ -90,7 +97,7 @@ class ForumController extends AbstractController implements ControllerInterface{
         $category = $categoryManager->findOneById($id);
         $posts = $postManager->displayAllPostsByTopic($id);
 
-        // Retrieve unique users who have posted in this topic
+        // Récupérer les utilisateurs uniques qui ont posté dans ce sujet
         $users = $userManager->getUsersByTopic($id);
 
         if(!$topic) {
@@ -114,15 +121,15 @@ class ForumController extends AbstractController implements ControllerInterface{
         $categoryManager = new CategoryManager();
         $topicManager = new TopicManager();
     
-        // Validate category
+        // Vérifier la catégorie
         $category = $categoryManager->findOneById($category_id);
         
-        // Check if category is valid
+        // Vérifier si la catégorie est valide
         if (!$category) {
-            // Log the error
+            // Enregistrer l'erreur
             error_log("Invalid category ID: " . $category_id);
             
-            // Redirect or handle the error appropriately
+            // Redirection ou gestion de l'erreur de mani re appropri e
             $this->redirectTo("forum", "index");
             return null;
         }
@@ -131,10 +138,10 @@ class ForumController extends AbstractController implements ControllerInterface{
             $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
-            // Ensure user is logged in
+            // Vérifier si l'utilisateur est connect
             $author = Session::getUser();
             if (!$author) {
-                // Redirect to login or show error
+                // Redirection vers la page de login ou affichage d'une erreur
                 $this->redirectTo("security", "login");
                 return null;
             }
@@ -166,7 +173,7 @@ class ForumController extends AbstractController implements ControllerInterface{
             }
         }
     
-        // If we reach here, show the create topic form
+        // Si nous arrivons ici, afficher le formulaire de création de sujet
         return [
             "view" => VIEW_DIR."forum/createTopic.php",
             "meta_description" => "Créer un nouveau sujet",
@@ -198,50 +205,67 @@ class ForumController extends AbstractController implements ControllerInterface{
 
     // Créer un message
     public function createPost(int $topic_id) {
-        $topicManager = new TopicManager();
         $postManager = new PostManager();
-        $categoryManager = new CategoryManager();
-        
-        if (isset($_POST["content"])) {
-            $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    
-            // Auteur du message
-            $author = Session::getUser()->getId();
-    
-            if ($content && $topic_id) {
-                $postData = [
-                    "content" => $content,
-                    "user_id" => $author,  
-                    "topic_id" => $topic_id
-                ];
-    
-                $postManager->add($postData);
-    
-                // Récupérer le topic
-                $topic = $topicManager->findOneById($topic_id);
+        $topicManager = new TopicManager();
+
+        // Vérifier si le sujet existe
+        $topic = $topicManager->findOneById($topic_id);
+        if (!$topic) {
+            Session::addFlash('error', 'Sujet non trouvé');
+            return $this->redirectTo("forum", "index");
+        }
+
+        // Vérifier si le sujet est verrouillé
+        if ($topic->getIsLocked()) {
+            Session::addFlash('error', 'Ce sujet est verrouillé');
+            return $this->redirectTo("forum", "discussionByTopic", $topic_id);
+        }
+
+        // Vérifier si l'utilisateur est connecté
+        $user = Session::getUser();
+        if (!$user) {
+            Session::addFlash('error', 'Vous devez être connecté pour poster un message');
+            return $this->redirectTo("security", "login");
+        }
+
+        // Traitement du formulaire
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['content'])) {
+            $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            if (empty($content)) {
+                Session::addFlash('error', 'Le message ne peut pas être vide');
+                return $this->redirectTo("forum", "discussionByTopic", $topic_id);
+            }
+
+            $dateTime = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+            
+            $postData = [
+                'content' => $content,
+                'user_id' => $user->getId(),
+                'topic_id' => $topic_id,
+                'creationDate' => $dateTime->format('Y-m-d H:i:s')
+            ];
+
+            // Ajouter le message
+            $postId = $postManager->add($postData);
+
+            if ($postId) {
+                // Utiliser une session flash pour le message de succès
+                // Session::addFlash('success', 'Message posté avec succès');
                 
-                // Récupérer la catégorie du topic
-                $category = $categoryManager->findOneById($topic->getCategory()->getId());
-    
-                return [
-                    "view" => VIEW_DIR."forum/listMessages.php",
-                    "meta_description" => "Discussion : ".$topic,
-                    "data" => [
-                        "category" => $category,
-                        "topic" => $topic, 
-                        "posts" => $postManager->displayAllPostsByTopic($topic_id)
-                    ]
-                ];
+                // Redirection en utilisant POST-REDIRECT-GET
+                header("Location: index.php?ctrl=forum&action=discussionByTopic&id=" . $topic_id);
+                exit();
+            } else {
+                Session::addFlash('error', 'Erreur lors de la publication du message');
+                return $this->redirectTo("forum", "discussionByTopic", $topic_id);
             }
         }
-    
-        // Gestion du cas où aucun post n'est créé
-        return [
-            "view" => VIEW_DIR."forum/listMessages.php",
-            "meta_description" => "Erreur de création de message",            
-            "data" => []
-        ];
+
+        // Si on arrive ici sans POST, rediriger vers la discussion
+        return $this->redirectTo("forum", "discussionByTopic", $topic_id);
     }
+
 
     // Suppression d'un message si on en est l'auteur ou admin
     public function deletePost(int $id) {

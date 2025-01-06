@@ -2,11 +2,12 @@
     $category = $result["data"]['category'];
     $topic = $result["data"]['topic']; 
     $posts = $result["data"]['posts']; 
+    $users = $result["data"]['users'] ?? [];
 ?>
 
 <section class="information-container">
     <div class="information">
-        <h2><a href="index.php?ctrl=forum&action=index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $topic->getCategory()->getId() ?>"><?= $topic->getCategory() ?></a> / <?= $topic ?> <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '' ?></h2>
+        <h2><a href="index.php?ctrl=forum&action=listTopicsByCategory&id=<?= $topic->getCategory()->getId() ?>"><?= $topic->getCategory() ?></a> / <?= $topic ?> <?= $topic->getLocked() ? '<i class="fas fa-lock"></i>' : '' ?></h2>
     </div>
 </section>
 
@@ -36,18 +37,29 @@
 
                     $class = App\Session::isAuthor($post->getUser()->getId()) ? "author" : "contributor";
                     ?>
-                    <div class="discussion-item <?= $class ?>">
-                        <p><?= $post->getContent() ?></p>
-                        <span><?= $post->getUser() ?>, le <?= $post->getCreationDate() ?></span>
-                        <?php 
-                            // Vérifier si l'utilisateur peut supprimer le message
-                            if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
-                                <form action="index.php?ctrl=forum&action=deletePost&id=<?= $post->getId() ?>" method="post">
-                                    <button type="submit" class="btn delete-btn message-delete">Supprimer   <i class="fa-solid fa-trash"></i></button>
-                                </form>
-                            <?php } ?>
+                    <div class="contents-discussion">
+                        <div class="contents-discussion-item">
+                            <div class="discussion-item <?= $class ?>">
+                                <div class="discussion-item-content">
+                                    <p><?= $post->getContent() ?></p>
+                                    <div class="feed-message">
+                                        <a href="index.php?ctrl=security&action=profile&id=<?= $post->getUser()->getId() ?>"><?= $post->getUser() ?></a>
+                                        - le <?= $post->getCreationDate() ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="discussion-item-footer">
+                                <?php 
+                                    // Vérifier si l'utilisateur peut supprimer le message
+                                    if(App\Session::isAdmin() || App\Session::isAuthor($post->getUser()->getId())) {?>
+                                        <form action="index.php?ctrl=forum&action=deletePost&id=<?= $post->getId() ?>" method="post">
+                                            <button type="submit" class="btn delete-btn message-delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                <?php } ?>
+                            </div>    
+                        </div>
                     </div>
-        <?php } ?>
+            <?php } ?>
         </div>
 
         <div class="contents-form">
@@ -71,14 +83,19 @@
     <aside class="aside-container">
         <h3>Dans la discussion</h3>
         <?php 
-        $users = $result["data"]['users'] ?? [];
-        if (!empty($users)) { 
-            foreach ($users as $user) { ?>
-                <div class="member-item">
-                    <a href="index.php?ctrl=security&action=profile&id=<?= $user->getId() ?>"><?= $user->getNickName() ?></a>
-                </div>
-        <?php } 
-        } else { ?>
+        if (!empty($users)) { ?>
+            <div class="main-aside-list">
+                <?php foreach ($users as $user) { ?>
+                    <div class="aside-item">
+                        <div class="aside-item-name">
+                            <i class="fa-solid fa-user"></i>
+                            <a href="index.php?ctrl=security&action=profile&id=<?= $user->getId() ?>"><?= $user->getNickName() ?></a>
+                        </div>
+                        <span>(<?= $user->countCreatedPosts() ?>)</span>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } else { ?>
             <p>Aucun utilisateur n'a encore participé à cette discussion</p>
         <?php } ?>
     </aside>

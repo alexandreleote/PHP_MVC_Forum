@@ -44,4 +44,18 @@ class CategoryManager extends Manager{
             $this->className
         );
     }
+
+    // Retrieve categories by user
+    public static function getCategoriesByUser($userId) {
+        $sql = "SELECT DISTINCT c.*
+                FROM category c
+                JOIN topic t ON c.id_category = t.category_id
+                WHERE t.user_id = :userId";
+        
+        $categoryManager = new self();
+        return $categoryManager->getMultipleResults(
+            DAO::select($sql, ['userId' => $userId]),
+            $categoryManager->className
+        );
+    }
 }

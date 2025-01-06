@@ -20,7 +20,7 @@ class TopicManager extends Manager{
     public function displayAllTopicsByCategory($id) {
         $sql = "SELECT t.id_topic,
                        t.title,
-                       DATE_FORMAT(t.creationDate, '%d-%m-%Y %H:%i') AS creationDate,
+                       DATE_FORMAT(t.creationDate, '%d-%m-%Y à %H:%i') AS creationDate,
                        t.creationDate AS sortTopic,
                        t.isLocked,
                        t.user_id,
@@ -64,7 +64,7 @@ class TopicManager extends Manager{
     public static function getTopicsByUser($userId) {
         $sql = "SELECT t.id_topic,
                        t.title,
-                       DATE_FORMAT(t.creationDate, '%d-%m-%Y %H:%i') AS creationDate,
+                       DATE_FORMAT(t.creationDate, '%d-%m-%Y à %H:%i') AS creationDate,
                        t.category_id,
                        c.name
                 FROM topic t
@@ -115,6 +115,31 @@ class TopicManager extends Manager{
         return $topics;
     }
 
+    public static function getTopicsByCategory($categoryId) {
+        $sql = "SELECT t.id_topic,
+                       t.title,
+                       t.creationDate,
+                       t.isLocked,
+                       t.user_id,
+                       t.category_id,
+                       COUNT(m.id_message) as post_count
+                FROM topic t
+                LEFT JOIN message m ON t.id_topic = m.topic_id
+                WHERE t.category_id = :id
+                GROUP BY t.id_topic, t.title, t.creationDate, t.isLocked, t.user_id, t.category_id
+                ORDER BY t.creationDate DESC";
+        
+        $results = DAO::select($sql, ['id' => $categoryId]);
+        
+        $topics = [];
+        if ($results) {
+            foreach($results as $result) {
+                $topics[] = new Topic($result);
+            }
+        }
+        return $topics;
+    }
+
     public static function countTopicsByCategory($categoryId) {
         $sql = "SELECT COUNT(*) as topic_count
                 FROM topic
@@ -123,27 +148,42 @@ class TopicManager extends Manager{
         return $result['topic_count'];
     }
 
-    public static function getTopicsByCategory($categoryId) {
-        $sql = "SELECT t.*, 
-                GREATEST(t.creationDate, 
-                        COALESCE((SELECT MAX(m.creationDate) 
-                                 FROM message m 
-                                 WHERE m.topic_id = t.id_topic), 
-                                 t.creationDate)
-                ) as lastActivity
-                FROM topic t
-                WHERE t.category_id = :categoryId 
-                ORDER BY lastActivity DESC";
-        
-        $results = DAO::select($sql, ['categoryId' => $categoryId]);
-        
-        $topics = [];
-        if ($results) {
-            foreach($results as $result) {
-                $topics[] = new Topic($result);
-            }
+    public function getMostActiveUsersForCurrentMonth($categoryId = null) {
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+    
+        $sql = "SELECT u.id_user, u.nickname, 
+                COUNT(DISTINCT m.id_message) as month_messages
+                FROM user u
+                INNER JOIN message m ON m.user_id = u.id_user
+                INNER JOIN topic t ON m.topic_id = t.id_topic
+                WHERE YEAR(m.creationDate) = :year 
+                AND MONTH(m.creationDate) = :month";
+    
+        $params = [
+            'year' => $currentYear,
+            'month' => $currentMonth
+        ];
+    
+        if ($categoryId) {
+            $sql .= " AND t.category_id = :categoryId";
+            $params['categoryId'] = $categoryId;
         }
     
-        return $topics;
-    }
+        $sql .= " GROUP BY u.id_user, u.nickname
+                  HAVING month_messages > 0
+                  ORDER BY month_messages DESC
+                  LIMIT 5";
+    
+        $results = DAO::select($sql, $params);
+        
+        $activeUsers = [];
+        foreach ($results ?? [] as $result) {
+            $user = new \Model\Entities\User($result);
+            $user->setMessageCount($result['month_messages']);
+            $activeUsers[] = $user;
+        }
+    
+        return $activeUsers;
+    }   
 }

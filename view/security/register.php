@@ -12,9 +12,19 @@
 
                     <input type="email" name="email" id="email" placeholder="Email" required>
 
-                    <input type="password" name="pass1" id="pass1" placeholder="Mot de passe" required>
-                    
-                    <input type="password" name="pass2" id="pass2" placeholder="Confirmer le mot de passe" required>
+                    <div class="password-container">
+                        <input type="password" name="pass1" id="pass1" placeholder="Mot de passe" required>
+                        <button type="button" id="togglePassword1" class="toggle-password">
+                            <i class="fa-solid fa-eye-slash" id="passwordToggleIcon1"></i>
+                        </button>
+                    </div>
+
+                    <div class="password-container">
+                        <input type="password" name="pass2" id="pass2" placeholder="Confirmer le mot de passe" required>
+                        <button type="button" id="togglePassword2" class="toggle-password">
+                            <i class="fa-solid fa-eye-slash" id="passwordToggleIcon2"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="accept-terms">

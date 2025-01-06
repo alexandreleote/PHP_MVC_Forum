@@ -114,16 +114,22 @@ class SecurityController extends AbstractController{
         // Récupérer les catégories
         $categories = $categoryManager->findAll(["id_category", ""]);
 
+        // Déterminer si l'utilisateur est connecté
+        $currentUser = Session::getUser();
+        $isCurrentUser = $currentUser && ($id === null || $id == $currentUser->getId());
+
         return [
             "view" => VIEW_DIR."security/profile.php",
             "meta_description" => "Profil de : ".$user->getNickName(),
             "data" => [
                 "user" => $user,
                 "categories" => $categories,
-                "isCurrentUser" => ($id === null || $id == Session::getUser()->getId())
+                "isCurrentUser" => $isCurrentUser,
+                "isConnected" => $currentUser !== false
             ]
         ];
-    }
+    }    
+
     public function modify() {
         $userManager = new UserManager();
         $user = Session::getUser();
