@@ -62,16 +62,21 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPasswordToggle('pass2', 'togglePassword2', 'passwordToggleIcon2');
 });
 
-// Confirmer la suppression du compte
+// Gestion de la suppression de compte
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('#delete-user-btn') && document.querySelector('.form-delete-account')) {
-        document.querySelector('#delete-user-btn').addEventListener('click', () => {
-            document.querySelector('.form-delete-account').classList.add('active');
-            console.log('Button clicked, form container toggled');
+    const deleteUserBtn = document.querySelector('#delete-user-btn');
+    const deleteAccountForm = document.querySelector('.form-delete-account');
+    const cancelDeleteBtn = document.querySelector('#cancel-delete-btn');
+
+    if (deleteUserBtn && deleteAccountForm && cancelDeleteBtn) {
+        // Afficher le formulaire de confirmation
+        deleteUserBtn.addEventListener('click', () => {
+            deleteAccountForm.classList.add('active');
         });
-    } else {
-        console.error('Button or form container not found');
-        console.log('btnDeleteAccount:', document.querySelector('#delete-user-btn'));
-        console.log('formDeleteAccount:', document.querySelector('.form-delete-account'));
+
+        // Masquer le formulaire de confirmation
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteAccountForm.classList.remove('active');
+        });
     }
 });

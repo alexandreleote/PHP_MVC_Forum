@@ -66,33 +66,40 @@ class UserManager extends Manager{
     }
 
     public function deleteProfile($id) {
-        // Créer l'utilisateur anonyme s'il n'existe pas
-        if (empty($this->findOneById(1))) {
-            $data = [
-                'id_user' => 1,
-                'nickName' => 'anonyme',
-                'password' => '',
-                'email' => ''
-            ];
-            $this->add($data);
+        // Vérifier si l'utilisateur existe
+        $user = $this->findOneById($id);
+        if (!$user) {
+            return false;
         }
 
-        // Mettre à jour les posts de l'utilisateur
-        $sqlPosts = "UPDATE message 
-                     SET user_id = 1 
-                     WHERE user_id = :id";
-        DAO::update($sqlPosts, ['id' => $id]);
+        // Créer l'utilisateur anonyme s'il n'existe pas
+        $sqlCheckAnonymous = "SELECT id_user FROM user WHERE id_user = 1 AND nickName = 'anonyme'";
+        $anonymousUser = DAO::select($sqlCheckAnonymous, null, false);
 
-        // Mettre à jour les topics de l'utilisateur
-        $sqlTopics = "UPDATE topic 
-                      SET user_id = 1 
-                      WHERE user_id = :id";
-        DAO::update($sqlTopics, ['id' => $id]);
+        if (!$anonymousUser) {
+            $sqlCreateAnonymous = "INSERT INTO user (id_user, nickName, email, password) VALUES (1, 'anonyme', '', '')";
+            DAO::insert($sqlCreateAnonymous);
+        }
 
-        // Supprimer l'utilisateur
-        $sqlDelete = "DELETE FROM user 
-                      WHERE id_user = :id";
-        return DAO::delete($sqlDelete, ['id' => $id]);
+        try {
+            // Réaffecter les messages à l'utilisateur anonyme
+            $sqlUpdateMessages = "UPDATE message SET user_id = 1 WHERE user_id = :id";
+            DAO::update($sqlUpdateMessages, ['id' => $id]);
+
+            // Réaffecter les topics à l'utilisateur anonyme
+            $sqlUpdateTopics = "UPDATE topic SET user_id = 1 WHERE user_id = :id";
+            DAO::update($sqlUpdateTopics, ['id' => $id]);
+
+            // Supprimer l'utilisateur
+            $sqlDelete = "DELETE FROM user WHERE id_user = :id";
+            $deleteResult = DAO::delete($sqlDelete, ['id' => $id]);
+
+            return $deleteResult;
+        } catch (\Exception $e) {
+            // Enregistrer l'erreur dans les logs
+            error_log("Erreur lors de la suppression du profil : " . $e->getMessage());
+            return false;
+        }
     }
 
     public static function getUserById($userId) {

@@ -33,9 +33,9 @@
                 <div class="user-role">
                     <i class="fa-solid fa-chevron-right"></i>
                     <?php if($user->isAdmin()) { ?>
-                        <span>Membre / Admin</span>
+                        <span>Admin</span>
                     <?php } else if ($user->isMod()) { ?>
-                        <span>Membre / Modérateur</span>
+                        <span>Modérateur</span>
                     <?php } else { ?>
                         <span>Membre</span>
                     <?php } ?>
@@ -159,9 +159,11 @@
                 </span>
     
                 <div class="contents-form-footer">
-                        <button type="button" class="btn delete-btn" id="delete-user-btn">Supprimer le compte <i class="fa-solid fa-trash"></i></button>
-                        <button type="submit" class="btn btn-publish-content">Modifier <i class="fa-solid fa-paper-plane"></i></button>
+                    <button type="submit" class="btn btn-publish-content">Modifier <i class="fa-solid fa-paper-plane"></i></button>
                 </div>
+            </form>
+            <form action="index.php?ctrl=security&action=deleteAccount&id=<?= $user->getId() ?>" method="post">
+                <button type="submit" class="btn delete-btn" id="delete-user-btn">Supprimer le compte <i class="fa-solid fa-trash"></i></button>
             </form>
         </div>
     </section>

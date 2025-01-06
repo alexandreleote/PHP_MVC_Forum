@@ -207,16 +207,28 @@ class SecurityController extends AbstractController{
         $this->redirectTo("security", "profile");
     }
 
-    public function deleteUserProfile ($id) {
+    public function deleteAccount($id = null) {
+        // Vérifier si l'utilisateur est connecté et que l'ID correspond
+        if (!Session::getUser() || Session::getUser()->getId() != $id) {
+            Session::addFlash('error', 'Vous n\'êtes pas autorisé à supprimer ce compte.');
+            $this->redirectTo('security', 'profile');
+            return;
+        }
+
         $userManager = new UserManager();
 
-        $user = Session::getUser();
+        // Supprimer le compte
+        $result = $userManager->deleteProfile($id);
 
-        $userManager->deleteProfile($user->getId());
-
-        Session::removeUser('user');
-
-        $this->redirectTo("security", "login");
+        if ($result) {
+            // Déconnecter l'utilisateur
+            Session::removeUser();
+            Session::addFlash('success', 'Votre compte a été supprimé avec succès.');
+            $this->redirectTo('home', 'index');
+        } else {
+            Session::addFlash('error', 'Une erreur est survenue lors de la suppression de votre compte.');
+            $this->redirectTo('security', 'profile');
+        }
     }
 
 }
