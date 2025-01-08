@@ -34,7 +34,7 @@
                             if(App\Session::getUser()){
                                 ?>
                                 <a href="index.php?ctrl=security&action=profile"><span class="fas fa-user"></span>&nbsp;<?= App\Session::getUser()?></a>
-                                <a href="index.php?ctrl=security&action=logout">Déconnexion</a>
+                                <a href="index.php?ctrl=security&action=logout"><i class="fa-solid fa-power-off"></i></a>
                                 <?php
                             }
                             else{
@@ -53,7 +53,13 @@
                 </main>
             </div>
             <footer class="footer">
-                <p>&copy; <?= date_create("now")->format("Y") ?> - <a href="#">Règlement du forum</a> - <a href="#">Mentions légales</a></p>
+                <div class="footer-details">
+                    <a href="#">Conditions d'utilisation</a>
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Mentions légales</a>
+                    <a href="#">Gestion des cookies</a>
+                </div>
+                <p>&copy; <?= date_create("now")->format("Y") ?> HelpIt, Inc. Tous droits réservés.</p>
             </footer>
         </div>
         <script
