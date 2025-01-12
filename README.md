@@ -1,4 +1,5 @@
 
+
 # Système de plate-forme de communication en ligne - Forum
 ## 📋 Contexte du projet
 Vous travaillez au sein d'une web agency en tant que développeur-intégrateur web. Suite à la 
@@ -77,20 +78,67 @@ git clone le [repo](https://github.com/alexandreleote/PHP_MVC_Forum.git)
    define('DB_PASS', '');<br>
    
 ## 🚀 Structure du projet
+
+```
 PHP_MVC_Forum/<br>
-En cours de construction<br>
-└── README.md<br>
+├── Database/
+|   └── forum_alexandre.sql
+├── app/
+|   ├── AbstractController.php
+|   ├── Autoloader.php
+|   ├── ControllerInterface.php
+|   ├── DAO.php
+|   ├── Entity.php
+|   ├── Manager.php
+|   └── Session.php
+├── controller/
+|   ├── ForumController.php
+|   ├── HomeController.php
+|   └── SecurityController.php
+├── model/
+|   ├── entities/
+|   |   ├── Category.php
+|   |   ├── Post.php
+|   |   ├── Topic.php
+|   |   └── User.php
+|   └── managers/
+|       ├── CategoryManager.php
+|       ├── PostManager.php
+|       ├── TopicManager.php
+|       └── UserManager.php
+├── public/
+|   ├── css/
+|   |   └── style.css
+|   ├── img/
+|   |   └── bg-forum.jpg
+|   └── js/
+|       └── script.js
+├── view/
+|   ├── forum/
+|   |   ├── listCategories.php
+|   |   ├── listMessages.php
+|   |   └── listTopics.php
+|   ├── security/
+|   |   ├── login.php
+|   |   ├── profile.php
+|   |   └── register.php
+|   ├── home.php
+|   └── layout.php
+├── README.md
+└── index.php
+```
 
 ## ✨ Démonstration
 Captures d'écran<br>
 Bientôt affichées<br>
 
-Version en ligne<br>
-🔗 Démo en cours de construction
 
 ## 📚 Ressources
 Documentation officielle
-Bientôt complétée
+- [PHP](https://www.php.net/)
+- [W3Schools](https://www.w3schools.com/)
+- [MDN](https://developer.mozilla.org/fr/)
+- [StackOverflow](https://stackoverflow.com/)
 
 ## 🏆 Compétences visées
 - Développer une application web complète
